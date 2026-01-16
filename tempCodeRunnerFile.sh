@@ -1,0 +1,1 @@
+pkill -f "http.server.*5500"
