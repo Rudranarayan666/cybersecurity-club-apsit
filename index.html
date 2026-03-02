@@ -1249,33 +1249,7 @@
             box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
         }
 
-        .loader-container {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-base);
-            z-index: 20000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: var(--text-main);
-        }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(0, 102, 255, 0.1);
-            border-top: 4px solid var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
 
         .modal-overlay {
             position: fixed;
@@ -1671,19 +1645,133 @@
                 padding: 1.5rem;
             }
         }
+
+        /* PRELOADER STYLES */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050a10;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .loader-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .loader-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 20px rgba(0, 102, 255, 0.5));
+            animation: loader-pulse 2s infinite ease-in-out;
+        }
+
+        .loader-text {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #fff, var(--accent-primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: loader-fade-up 1s forwards 0.3s;
+        }
+
+        .loader-bar-container {
+            width: 200px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 1.5rem auto 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .loader-bar {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-primary);
+            animation: loader-slide 2s infinite ease-in-out;
+            box-shadow: 0 0 15px var(--accent-primary);
+        }
+
+        @keyframes loader-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        @keyframes loader-fade-up {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes loader-slide {
+            0% {
+                left: -100%;
+            }
+
+            50% {
+                left: 0%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        body.loaded #preloader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
     </style>
 </head>
 
 <body class="dark-mode">
     <canvas id="particle-network"></canvas>
     <canvas id="webgl-canvas"></canvas>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="images/Club Logo.png" alt="Cyber Club Logo" class="loader-logo">
+            <div class="loader-text">Welcome to APSIT Cyber Security</div>
+            <div class="loader-bar-container">
+                <div class="loader-bar"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <div class="loader-container">
-        <div class="spinner"></div>
-        <div style="font-family: var(--font-head); font-weight:700; letter-spacing:1px;">LOADING SYSTEM</div>
-    </div>
+
 
     <div id="toast-container"></div>
 
@@ -2150,9 +2238,12 @@
                         <i class="fa-solid fa-envelope" style="color:var(--accent-primary)"></i> cyberclub@apsit.edu.in
                     </p>
                     <div style="display:flex; gap:1rem;">
-                        <button class="btn btn-secondary"><i class="fa-brands fa-linkedin"></i></button>
-                        <button class="btn btn-secondary"><i class="fa-brands fa-instagram"></i></button>
-                        <button class="btn btn-secondary"><i class="fa-brands fa-discord"></i></button>
+                        <a href="https://www.linkedin.com/company/cybersecurity-club-apsit/" target="_blank"
+                            class="btn btn-secondary" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="https://instagram.com/cybersecurityclub_apsit?igshid=MzRlODBiNWFlZA==" target="_blank"
+                            class="btn btn-secondary" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/JIAYxYq1PXz7KduUqLkUJM" target="_blank"
+                            class="btn btn-secondary" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
             </div>
@@ -2821,6 +2912,16 @@
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
         }
 
+        // --- PRELOADER LOGIC ---
+        window.addEventListener('load', () => {
+            // Wait for 2 seconds to ensure the animation is seen
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+                // Optional: Start GSAP animations after preloader is gone
+                if (typeof initHeroGSAP === 'function') initHeroGSAP();
+            }, 2000);
+        });
+
         // --- MAIN INIT ---
         window.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -2864,19 +2965,13 @@
             } catch (globalError) {
                 console.error("Critical UI Initialization Error:", globalError);
             } finally {
-                // Always hide the loading screen so the user is never stuck
+                // Hide preloader with a smooth class transition after 2s
                 setTimeout(() => {
-                    const loader = document.querySelector('.loader-container');
-                    if (loader && loader.style.display !== 'none') {
-                        gsap.to('.loader-container', {
-                            opacity: 0, duration: 0.5, onComplete: () => {
-                                loader.style.display = 'none';
-                                gsap.from('.hero-title', { y: 30, opacity: 0, duration: 1, ease: "power3.out" });
-                                gsap.from('.hero-desc', { y: 20, opacity: 0, delay: 0.2, duration: 1 });
-                            }
-                        });
-                    }
-                }, 1000);
+                    document.body.classList.add('loaded');
+                    // Trigger hero animations
+                    gsap.from('.hero-title', { y: 30, opacity: 0, duration: 1, ease: "power3.out" });
+                    gsap.from('.hero-desc', { y: 20, opacity: 0, delay: 0.2, duration: 1 });
+                }, 2000);
             }
         });
 

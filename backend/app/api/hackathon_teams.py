@@ -60,7 +60,7 @@ def create_hackathon_team(
                 email=member_data.email.lower(),
                 moodle_id=member_data.moodle_id,
                 roll_no=member_data.roll_no,
-                division=member_data.division.upper(),
+                division=member_data.division.upper() if member_data.division else None,
                 department=member_data.department,
                 year=member_data.year,
                 mobile=member_data.mobile,
