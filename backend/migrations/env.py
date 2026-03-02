@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 # Import app modules
 from app.database import Base
 from app.config import settings
-from app.models import User, Event, Registration, Resource  # noqa
+from app.models import User, Event, Registration, Resource, HackathonTeam, TeamMember, AuditLog, RefreshToken  # noqa
 
 # this is the Alembic Config object
 config = context.config

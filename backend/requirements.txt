@@ -22,6 +22,10 @@ bleach==6.1.0
 # Rate Limiting
 slowapi==0.1.9
 
+# MFA
+pyotp==2.9.0
+qrcode[pil]==7.4.2
+
 # File handling
 python-magic==0.4.27
 

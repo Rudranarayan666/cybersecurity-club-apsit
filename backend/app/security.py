@@ -1,5 +1,5 @@
 """Security utilities for authentication and password hashing."""
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
 from argon2 import PasswordHasher
@@ -33,13 +33,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode = data.copy()
     
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(seconds=settings.jwt_expiration_seconds)
+        expire = datetime.now(timezone.utc) + timedelta(seconds=settings.jwt_expiration_seconds)
     
     to_encode.update({
         "exp": expire,
-        "iat": datetime.utcnow()
+        "iat": datetime.now(timezone.utc)
     })
     
     encoded_jwt = jwt.encode(
@@ -62,3 +62,23 @@ def decode_access_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
+
+
+def verify_access_token(token: str) -> Optional[str]:
+    """Verify token and return the username (sub claim), or None."""
+    payload = decode_access_token(token)
+    if payload:
+        return payload.get("sub")
+    return None
+
+
+def create_mfa_token(username: str) -> str:
+    """Create a short-lived token (5 minutes) for the MFA second-factor step.
+    
+    Includes a 'mfa_pending' claim so it can't be used as a real access token.
+    """
+    return create_access_token(
+        data={"sub": username, "mfa_pending": True},
+        expires_delta=timedelta(minutes=5)
+    )
+

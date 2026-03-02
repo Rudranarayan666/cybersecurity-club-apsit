@@ -1,0 +1,101 @@
+name: Security CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Dependency vulnerability scan (pip-audit)
+        run: pip-audit --requirement requirements.txt --output json --output-file audit.json
+        continue-on-error: false
+
+      - name: SAST scan (bandit)
+        run: |
+          bandit -r app/ -f json -o bandit_report.json -ll
+          echo "Bandit scan complete"
+
+      - name: Lint (ruff)
+        run: ruff check app/
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            backend/audit.json
+            backend/bandit_report.json
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: cybersec_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/cybersec_test
+          JWT_SECRET_KEY: test-secret-key-that-is-definitely-32-chars-long
+        run: alembic upgrade head
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/cybersec_test
+          JWT_SECRET_KEY: test-secret-key-that-is-definitely-32-chars-long
+          DEBUG: "true"
+        run: pytest tests/ -v --tb=short --cov=app --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml

@@ -1,0 +1,24 @@
+# CODEOWNERS — Code ownership for pull request review requirements
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Backend security-critical files: require maintainer review
+backend/app/security.py          @cybersec-club-apsit/maintainers
+backend/app/config.py            @cybersec-club-apsit/maintainers
+backend/app/middleware/          @cybersec-club-apsit/maintainers
+backend/app/api/auth.py          @cybersec-club-apsit/maintainers
+backend/app/api/mfa.py           @cybersec-club-apsit/maintainers
+backend/migrations/              @cybersec-club-apsit/maintainers
+
+# CI/CD pipeline changes require maintainer sign-off
+.github/                         @cybersec-club-apsit/maintainers
+
+# Docker and infrastructure
+backend/docker-compose.yml       @cybersec-club-apsit/maintainers
+backend/nginx.conf               @cybersec-club-apsit/maintainers
+backend/Dockerfile               @cybersec-club-apsit/maintainers
+
+# Environment configuration templates
+backend/.env.example             @cybersec-club-apsit/maintainers
+
+# Everything else — any team member can approve
+*                                @cybersec-club-apsit/team

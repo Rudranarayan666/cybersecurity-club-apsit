@@ -11,8 +11,18 @@ from app.middleware.cors import setup_cors
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.middleware.rate_limit import get_rate_limiter, get_rate_limit_exceeded_handler
 from app.api import auth, events, registrations, resources, hackathon_teams
+from app.api import mfa as mfa_router
+from app.api import metrics as metrics_router
 from app.dependencies import get_current_user
 from app.utils.errors import create_error_response, AppException
+from app.utils.logging_config import setup_logging
+from app.middleware.ip_block import IPBlockMiddleware
+from app.middleware.csrf import CSRFMiddleware
+
+# Configure structured logging immediately
+setup_logging(level=settings.log_level, fmt=settings.log_format)
+import logging
+logger = logging.getLogger(__name__)
 
 # Security scheme for OpenAPI
 security_scheme = HTTPBearer()
@@ -44,9 +54,9 @@ app = FastAPI(
     * Security headers (HSTS, CSP, X-Frame-Options)
     """,
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json",
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
+    openapi_url="/openapi.json" if settings.debug else None,
     openapi_tags=[
         {
             "name": "Authentication",
@@ -125,8 +135,10 @@ limiter = get_rate_limiter()
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, get_rate_limit_exceeded_handler())
 
-# Add middleware
+# Add middleware (order matters: last added = outermost)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(IPBlockMiddleware)
+app.add_middleware(CSRFMiddleware, secret=settings.jwt_secret_key)
 setup_cors(app)
 
 # Create database tables (in production, use Alembic migrations)
@@ -135,10 +147,12 @@ if settings.debug:
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(mfa_router.router)
 app.include_router(events.router)
 app.include_router(registrations.router)
 app.include_router(resources.router)
 app.include_router(hackathon_teams.router)
+app.include_router(metrics_router.router)
 
 # Error handlers
 @app.exception_handler(AppException)
@@ -203,12 +217,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.get("/", tags=["Root"])
 def root():
     """Root endpoint."""
-    return {
-        "message": "Cybersecurity Club API",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "redoc": "/redoc"
-    }
+    resp = {"message": "Cybersecurity Club API", "version": "1.0.0"}
+    if settings.debug:
+        resp["docs"] = "/docs"
+        resp["redoc"] = "/redoc"
+    return resp
 
 
 @app.get("/health", tags=["Health"])

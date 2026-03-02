@@ -33,7 +33,10 @@ def get_events(
     if type is not None:
         query = query.filter(Event.type == type)
     
-    if is_active is not None:
+    # Default to showing only active events if not specified
+    if is_active is None:
+        query = query.filter(Event.is_active == True)
+    else:
         query = query.filter(Event.is_active == is_active)
     
     events = query.order_by(Event.date.desc()).all()

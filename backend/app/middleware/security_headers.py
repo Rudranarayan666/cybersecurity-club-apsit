@@ -16,13 +16,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         
+        # Build dynamic connect-src from allowed origins
+        connect_sources = " ".join(settings.allowed_origins_list)
+        
         # CSP allowing CDN resources for frontend (Google Fonts, Font Awesome, GSAP, Three.js)
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
-            "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000"
+            f"connect-src 'self' {connect_sources}"
         )
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         

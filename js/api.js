@@ -94,7 +94,7 @@ class APIService {
 
             // Handle timeout errors
             if (error.name === 'AbortError') {
-                console.error('[API] Request timeout');
+                if (this.debug) console.warn('[API] Request timeout');
                 return {
                     success: false,
                     error: 'Request timeout - server not responding',

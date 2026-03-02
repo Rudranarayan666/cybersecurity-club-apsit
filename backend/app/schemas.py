@@ -10,6 +10,7 @@ from app.models import EventType, ResourceLevel
 class Token(BaseModel):
     """JWT token response."""
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str = "bearer"
     expires_in: int = 3600
 
@@ -74,10 +75,10 @@ class RegistrationCreate(BaseModel):
     
     @validator('moodle_id')
     def validate_moodle_id(cls, v):
-        """Validate Moodle ID format (alphanumeric, 8-12 chars)."""
+        """Validate Moodle ID format (alphanumeric, 5-20 chars)."""
         import re
-        if not re.match(r'^[a-zA-Z0-9]{8,12}$', v):
-            raise ValueError('Moodle ID must be 8-12 alphanumeric characters')
+        if not re.match(r'^[a-zA-Z0-9]{5,20}$', v):
+            raise ValueError('Moodle ID must be 5-20 alphanumeric characters')
         return v
 
 
@@ -156,6 +157,17 @@ class TeamMemberBase(BaseModel):
         if not v.isdigit() or len(v) != 10:
             raise ValueError('Mobile number must be exactly 10 digits')
         return v
+    
+    @validator('email')
+    def validate_apsit_email(cls, v):
+        """Validate email belongs to APSIT domain."""
+        allowed_domains = {'apsit.edu.in', 'apsit.in'}
+        domain = v.split('@')[-1].lower()
+        if domain not in allowed_domains:
+            raise ValueError(
+                f'Email must be an APSIT institutional email (e.g., student@apsit.edu.in)'
+            )
+        return v.lower()
 
 
 class HackathonTeamCreate(BaseModel):
@@ -196,12 +208,24 @@ class TeamMemberResponse(BaseModel):
 
 
 class HackathonTeamResponse(BaseModel):
-    """Response schema for hackathon team."""
+    """Response schema for hackathon team (Admin only — includes member PII)."""
     id: UUID
     event_name: str
     team_name: str
     created_at: datetime
     members: List[TeamMemberResponse] = []
+    
+    class Config:
+        from_attributes = True
+
+
+class HackathonTeamPublicResponse(BaseModel):
+    """Public-safe response schema for hackathon team (no member PII)."""
+    id: UUID
+    event_name: str
+    team_name: str
+    created_at: datetime
+    member_count: int = 0
     
     class Config:
         from_attributes = True

@@ -12,7 +12,7 @@ from app.models import User, Event, Resource, EventType, ResourceLevel
 from app.security import hash_password
 from datetime import date, timedelta
 
-# Create tables
+# Create tables (safe: only creates tables that don't exist yet)
 Base.metadata.create_all(bind=engine)
 
 
@@ -21,11 +21,13 @@ def seed_database():
     db: Session = SessionLocal()
     
     try:
-        # Create admin user
-        admin_username = os.getenv("ADMIN_USERNAME", "admin")
-        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+        from app.config import settings
+        # =============================================
+        # 1. Create admin user
+        # =============================================
+        admin_username = settings.admin_username
+        admin_password = settings.admin_password
         
-        # Check if admin already exists
         existing_admin = db.query(User).filter(User.username == admin_username).first()
         if not existing_admin:
             admin = User(
@@ -39,19 +41,23 @@ def seed_database():
         else:
             print(f"✓ Admin user already exists: {admin_username}")
         
-        # Create sample events
+        # =============================================
+        # 2. Create sample events
+        # =============================================
         sample_events = [
             {
                 "title": "Web Security Workshop",
                 "type": EventType.WORKSHOP,
                 "date": date.today() + timedelta(days=30),
-                "description": "Introduction to OWASP Top 10 vulnerabilities and secure coding practices."
+                "description": "Introduction to OWASP Top 10 vulnerabilities and secure coding practices.",
+                "is_active": True
             },
             {
                 "title": "Malware Analysis Bootcamp",
                 "type": EventType.BOOTCAMP,
                 "date": date.today() + timedelta(days=45),
-                "description": "Hands-on training on analyzing malicious binaries safely in a controlled environment."
+                "description": "Hands-on training on analyzing malicious binaries safely in a controlled environment.",
+                "is_active": True
             },
             {
                 "title": "Introduction to Cryptography",
@@ -64,7 +70,8 @@ def seed_database():
                 "title": "CyberDefense CTF 2026",
                 "type": EventType.HACKATHON,
                 "date": date.today() + timedelta(days=60),
-                "description": "Join 50+ teams in a 48-hour endurance test of your hacking skills. Challenges include Web Exploitation, Cryptography, Reverse Engineering, and Forensics."
+                "description": "Join 50+ teams in a 48-hour endurance test of your hacking skills. Challenges include Web Exploitation, Cryptography, Reverse Engineering, and Forensics.",
+                "is_active": True
             }
         ]
         
@@ -79,44 +86,24 @@ def seed_database():
         
         db.commit()
         
-        # Create sample resources (note: these won't have actual PDF files, just database records)
-        sample_resources = [
-            {
-                "title": "Linux Command Cheatsheet",
-                "level": ResourceLevel.BEGINNER,
-                "file_url": "uploads/sample_linux_cheatsheet.pdf",
-                "file_size": 102400  # 100KB placeholder
-            },
-            {
-                "title": "Network Security Fundamentals",
-                "level": ResourceLevel.BEGINNER,
-                "file_url": "uploads/sample_network_security.pdf",
-                "file_size": 204800  # 200KB placeholder
-            },
-            {
-                "title": "Advanced Buffer Overflow Exploitation",
-                "level": ResourceLevel.ADVANCED,
-                "file_url": "uploads/sample_buffer_overflow.pdf",
-                "file_size": 512000  # 500KB placeholder
-            }
-        ]
+        # =============================================
+        # 3. Summary
+        # =============================================
+        total_users = db.query(User).count()
+        total_events = db.query(Event).count()
+        active_events = db.query(Event).filter(Event.is_active == True).count()
         
-        for resource_data in sample_resources:
-            existing_resource = db.query(Resource).filter(Resource.title == resource_data["title"]).first()
-            if not existing_resource:
-                resource = Resource(**resource_data)
-                db.add(resource)
-                print(f"✓ Created resource: {resource_data['title']}")
-            else:
-                print(f"✓ Resource already exists: {resource_data['title']}")
-        
-        db.commit()
-        
-        print("\n✓ Database seeding completed successfully!")
-        print(f"\nAdmin credentials:")
-        print(f"  Username: {admin_username}")
-        print(f"  Password: {admin_password}")
-        print(f"\n⚠️  IMPORTANT: Change the admin password after first login!")
+        print(f"\n{'='*50}")
+        print(f"  Database Seeding Complete")
+        print(f"{'='*50}")
+        print(f"  Users:         {total_users}")
+        print(f"  Events:        {total_events} ({active_events} active)")
+        print(f"{'='*50}")
+        print(f"\n  Admin credentials:")
+        print(f"    Username: {admin_username}")
+        print(f"    Password: {admin_password}")
+        print(f"\n  ⚠️  Change the admin password after first login!")
+        print(f"{'='*50}")
         
     except Exception as e:
         db.rollback()

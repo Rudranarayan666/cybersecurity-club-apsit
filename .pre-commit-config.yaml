@@ -1,0 +1,42 @@
+repos:
+  # Prevent committing .env files with real secrets
+  - repo: local
+    hooks:
+      - id: no-env-file
+        name: Block .env file commits
+        entry: bash -c 'if git diff --cached --name-only | grep -qE "^\.env$|/\.env$"; then echo "ERROR: Do not commit .env files. Use .env.example instead."; exit 1; fi'
+        language: system
+        stages: [commit]
+
+      - id: no-secrets-in-code
+        name: Detect hardcoded secrets
+        entry: bash -c 'if git diff --cached | grep -iE "(password|secret|api_key|token)\s*=\s*[\"'\''][^\"'\'']{8,}[\"'\'']" | grep -v "example\|test\|fake\|placeholder\|changeme"; then echo "ERROR: Possible hardcoded secret detected. Use environment variables instead."; exit 1; fi'
+        language: system
+        stages: [commit]
+
+  # Python security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: ["-r", "backend/app/", "-ll", "--quiet"]
+        stages: [commit]
+
+  # Python linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.2
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        files: "^backend/.*\\.py$"
+
+  # General file hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-json
+      - id: detect-private-key

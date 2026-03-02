@@ -1,22 +1,26 @@
 """Event registration endpoints."""
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query, Response
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from uuid import UUID
 from app.database import get_db
-from app.models import Registration, User
+from app.models import Registration, Event, User
 from app.schemas import RegistrationCreate, RegistrationResponse
 from app.dependencies import get_current_user
 from app.utils.errors import NotFoundError, ConflictError
 from app.utils.validation import sanitize_string
 from app.services.export_service import export_registrations_to_csv
+from app.middleware.rate_limit import get_rate_limiter
 
 router = APIRouter(prefix="/api/registrations", tags=["Registrations"])
+limiter = get_rate_limiter()
 
 
 @router.post("", response_model=RegistrationResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/hour")
 def create_registration(
+    request: Request,
     registration_data: RegistrationCreate,
     db: Session = Depends(get_db)
 ):
@@ -33,7 +37,6 @@ def create_registration(
     moodle_id = registration_data.moodle_id  # Already validated in schema
     
     # Check if event exists and is active
-    from app.models import Event
     event = db.query(Event).filter(
         Event.id == registration_data.event_id,
         Event.is_active == True
@@ -103,26 +106,6 @@ def get_registrations(
     return registrations
 
 
-@router.get("/{registration_id}", response_model=RegistrationResponse, status_code=status.HTTP_200_OK)
-def get_registration(
-    registration_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """Get a single registration by ID (Admin only).
-    
-    - **registration_id**: UUID of the registration
-    
-    Requires admin authentication.
-    """
-    registration = db.query(Registration).filter(Registration.id == registration_id).first()
-    
-    if not registration:
-        raise NotFoundError("Registration", str(registration_id))
-    
-    return registration
-
-
 @router.get("/export/csv", status_code=status.HTTP_200_OK)
 def export_registrations_csv(
     event_id: Optional[UUID] = Query(None, description="Filter by event ID"),
@@ -143,3 +126,23 @@ def export_registrations_csv(
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=registrations.csv"}
     )
+
+
+@router.get("/{registration_id}", response_model=RegistrationResponse, status_code=status.HTTP_200_OK)
+def get_registration(
+    registration_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get a single registration by ID (Admin only).
+    
+    - **registration_id**: UUID of the registration
+    
+    Requires admin authentication.
+    """
+    registration = db.query(Registration).filter(Registration.id == registration_id).first()
+    
+    if not registration:
+        raise NotFoundError("Registration", str(registration_id))
+    
+    return registration
