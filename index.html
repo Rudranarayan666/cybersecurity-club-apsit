@@ -24,6 +24,9 @@
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
 
+    <!-- Simple 3D Tilt Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+
     <style>
         /* =========================================
            1. CORE VARIABLES (THEME ENGINE)
@@ -743,9 +746,124 @@
             }
         }
 
+        .interactive-roadmap {
+            width: 100%;
+            max-width: 900px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 102, 255, 0.1);
+            position: relative;
+            z-index: 2;
+            cursor: zoom-in;
+            transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border: 1px solid rgba(0, 102, 255, 0.2);
+        }
+
+        .interactive-roadmap:hover {
+            box-shadow: 0 0 50px rgba(0, 102, 255, 0.4), inset 0 0 20px rgba(0, 102, 255, 0.2);
+            border-color: rgba(0, 102, 255, 0.5);
+            transform: scale(1.03) translateY(-10px);
+        }
+
+        /* Roadmap Lightbox Modal */
+        .roadmap-lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 15, 20, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            overflow: auto;
+            /* Allow scrolling if image is larger than screen */
+        }
+
+        .roadmap-lightbox.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-img-container {
+            position: relative;
+            max-width: 95vw;
+            max-height: 95vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 90vh;
+            /* Don't take up entire height to leave room to click out */
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 102, 255, 0.3);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(15, 20, 30, 0.8);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-alert);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10000;
+            transition: transform 0.3s, background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close-lightbox:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .roadmap-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .lightbox-img {
+                max-width: 100vw;
+                max-height: none;
+                /* Allow vertical scrolling on mobile */
+                height: auto;
+            }
+
+            .lightbox-img-container {
+                align-items: flex-start;
+                /* Start at top for scrolling */
+                padding-top: 60px;
+                /* Space for close button */
+            }
+        }
+
         .timeline-wrapper {
             position: relative;
-            padding: 4rem 0;
+            padding: 2rem;
             overflow: hidden;
             border-radius: 20px;
             background: var(--bg-glass);
@@ -785,16 +903,7 @@
         }
 
         .timeline::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            background: var(--accent-primary);
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -2px;
-            border-radius: 2px;
-            box-shadow: 0 0 15px rgba(0, 102, 255, 0.3);
+            display: none;
         }
 
         .timeline-node {
@@ -822,17 +931,7 @@
         }
 
         .timeline-node::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            right: -10px;
-            top: 20px;
-            background: #fff;
-            border: 4px solid var(--accent-primary);
-            border-radius: 50%;
-            z-index: 2;
-            transition: 0.3s;
+            display: none;
         }
 
         .timeline-node.right::after {
@@ -1261,7 +1360,7 @@
 
             50% {
                 background: #4dff4d;
-                box-shadow: 0 0 15px #4dff4d, 0 0 30px #4dff4d;
+                box-shadow: 0 0 15px #4dff4d, 0 0 30px #4d4dff;
             }
 
             75% {
@@ -1618,15 +1717,17 @@
         <section id="home" class="hero">
             <div class="container">
                 <div class="hero-content">
-                    <div class="hero-tag">[ System Status: Secure ]</div>
+                    <div class="hero-tag">[ System Status: SECURE v2 ]</div>
                     <h1 class="hero-title">
                         <span class="glitch" data-text="SECURE">SECURE</span><br>
                         <span class="glitch glow-text" data-text="THE UNSEEN">THE UNSEEN</span>
                     </h1>
                     <p class="hero-desc">
-    Securing Knowledge. Defending the <span style="color:var(--accent-primary); font-weight: 700;">Future.</span><br>
-    Where Security Meets <span style="color:var(--accent-primary); font-weight: 700;">Intelligence.</span>
-</p>
+                        Securing Knowledge. Defending the <span
+                            style="color:var(--accent-primary); font-weight: 700;">Future.</span><br>
+                        Where Security Meets <span
+                            style="color:var(--accent-primary); font-weight: 700;">Intelligence.</span>
+                    </p>
 
                     <div class="hero-btns">
                         <button class="btn btn-primary hover-trigger" onclick="scrollToSection('events')">
@@ -1663,8 +1764,10 @@
                         style="font-size:2.5rem; color:var(--accent-alert); margin-bottom:1.5rem;"></i>
                     <h3 style="color:var(--accent-alert);">Our Mission</h3>
                     <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
-    Our mission is to build a strong and inclusive student community united by a passion for cybersecurity. We strive to promote ethical hacking awareness, inspire the next generation of cyber defenders, and foster responsible digital citizenship in everything we do.
-</p>
+                        Our mission is to build a strong and inclusive student community united by a passion for
+                        cybersecurity. We strive to promote ethical hacking awareness, inspire the next generation of
+                        cyber defenders, and foster responsible digital citizenship in everything we do.
+                    </p>
                 </div>
 
                 <div class="card hover-trigger" style="border-top: 4px solid var(--accent-success);">
@@ -1672,8 +1775,10 @@
                         style="font-size:2.5rem; color:var(--accent-success); margin-bottom:1.5rem;"></i>
                     <h3 style="color:var(--accent-success);">Our Vision</h3>
                     <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.8;">
-    We envision a learning environment where students receive hands-on training and participate in workshops and competitions that challenge their skills. By encouraging teamwork and leadership, we aim to bridge the gap between academic knowledge and real-world industry demands.
-</p>
+                        We envision a learning environment where students receive hands-on training and participate in
+                        workshops and competitions that challenge their skills. By encouraging teamwork and leadership,
+                        we aim to bridge the gap between academic knowledge and real-world industry demands.
+                    </p>
                 </div>
             </div>
         </section>
@@ -1684,57 +1789,21 @@
                 <p class="section-subtitle">A structured path from novice to cyber-operative.</p>
             </div>
 
-            <div class="timeline-wrapper">
+            <div class="timeline-wrapper"
+                style="display: flex; flex-direction: column; align-items: center; gap: 3rem;">
                 <div class="timeline-bg"></div>
-                <div class="timeline">
-                    <div class="timeline-node left hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-primary);">01. Network Fundamentals</h3>
-                            <p>The foundation of the internet. Learn OSI model, TCP/IP handshakes, DNS resolution, HTTP
-                                protocols, and subnetting logic.</p>
-                        </div>
-                    </div>
 
-                    <div class="timeline-node right hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-secondary);">02. Linux & Scripting</h3>
-                            <p>Abandon the GUI. Master the Linux command line, file permissions, Bash automation, and
-                                Python for security scripting.</p>
-                        </div>
-                    </div>
-
-                    <div class="timeline-node left hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-alert);">03. Cryptography Basics</h3>
-                            <p>Protecting data at rest. Understand hashing (SHA), encryption (AES/RSA), digital
-                                signatures, and PKI infrastructure.</p>
-                        </div>
-                    </div>
-
-                    <div class="timeline-node right hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-success);">04. Penetration Testing</h3>
-                            <p>Offensive Operations. Learn reconnaissance (Nmap), scanning, exploitation (Metasploit),
-                                and report writing.</p>
-                        </div>
-                    </div>
-
-                    <div class="timeline-node left hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-secondary);">05. Malware Analysis</h3>
-                            <p>Dissecting the threat. Static and dynamic analysis of malicious binaries, reverse
-                                engineering, and sandboxing.</p>
-                        </div>
-                    </div>
-
-                    <div class="timeline-node right hover-trigger">
-                        <div class="node-content">
-                            <h3 style="color:var(--accent-primary);">06. Incident Response</h3>
-                            <p>The Blue Team. Detect breaches, analyze logs (Splunk), contain threats, and perform
-                                digital forensics.</p>
-                        </div>
+                <!-- Interactive Roadmap Image inside the container. Initializing vanilla-tilt via attributes -->
+                <div style="position: relative; width: 100%; max-width: 900px; margin: 0 auto;">
+                    <img src="images/Roadmap.png" alt="Learning Roadmap" id="roadmapThumbnail"
+                        class="interactive-roadmap hover-trigger" data-tilt data-tilt-max="8" data-tilt-speed="300"
+                        data-tilt-glare="true" data-tilt-max-glare="0.5" onclick="openLightbox()">
+                    <div
+                        style="position: absolute; bottom: -30px; width: 100%; text-align: center; color: var(--accent-primary); font-size: 0.9rem; pointer-events: none; animation: pulse 2s infinite;">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i> Click to enlarge
                     </div>
                 </div>
+
             </div>
 
             <h3 style="margin-bottom: 2rem; font-family:var(--font-head); font-size:2rem; text-align:center;">Skill
@@ -1867,7 +1936,7 @@
 
         </section>
 
-        
+
 
         <section id="events" class="section-wrapper">
             <div class="section-header">
@@ -2084,6 +2153,17 @@
         </section>
 
     </main>
+
+    <!-- Roadmap Lightbox Modal -->
+    <div class="roadmap-lightbox" id="roadmapLightbox" onclick="closeLightbox(event)">
+        <button class="close-lightbox" onclick="closeLightbox(event)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="lightbox-img-container">
+            <img src="images/Roadmap.png" alt="Learning Roadmap Full" class="lightbox-img">
+        </div>
+        <div class="roadmap-hint">[ CLICK ANYWHERE TO CLOSE ]</div>
+    </div>
 
     <div class="modal-overlay" id="authModal">
         <div class="cyber-modal modal-content">
@@ -2755,11 +2835,21 @@
                 filterResources('all');
 
                 // Scroll Triggers
-                gsap.utils.toArray('.timeline-node').forEach(node => {
-                    gsap.from(node, { scrollTrigger: { trigger: node, start: "top 85%", onEnter: () => node.classList.add('in-view') } });
-                });
                 gsap.utils.toArray('.section-title').forEach(title => {
                     gsap.from(title, { scrollTrigger: { trigger: title, start: "top 80%" }, y: 50, opacity: 0, duration: 1, ease: "power3.out" });
+                });
+
+                // Roadmap Image Animation Reveal
+                gsap.from('#roadmapThumbnail', {
+                    scrollTrigger: {
+                        trigger: '.timeline-wrapper',
+                        start: "top 75%",
+                    },
+                    y: 70,
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 1.2,
+                    ease: "back.out(1.5)"
                 });
 
                 document.querySelector('.hamburger').addEventListener('click', () => {
@@ -2783,4 +2873,29 @@
                 }, 1000);
             }
         });
+
+        // --- ROADMAP LIGHTBOX LOGIC ---
+        function openLightbox() {
+            const lightbox = document.getElementById('roadmapLightbox');
+            lightbox.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
+
+        function closeLightbox(e) {
+            // Only close if they didn't explicitly click on the image itself
+            // (so if they click the background, close button, or hit esc it closes)
+            if (e && e.target.classList.contains('lightbox-img')) return;
+
+            const lightbox = document.getElementById('roadmapLightbox');
+            lightbox.classList.remove('show');
+            document.body.style.overflow = ''; // Restore background scroll
+        }
+
+        // Close via Escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === "Escape") {
+                closeLightbox();
+            }
+        });
+
     </script>
