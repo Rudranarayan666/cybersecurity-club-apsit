@@ -143,18 +143,19 @@ class TeamMemberBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     moodle_id: str = Field(..., min_length=1, max_length=20)
-    roll_no: str = Field(..., min_length=1, max_length=20)
-    division: str = Field(..., min_length=1, max_length=5)
+    roll_no: Optional[str] = Field(None, max_length=20)
+    division: Optional[str] = Field(None, max_length=5)
     department: str = Field(..., min_length=1, max_length=100)
-    year: str = Field(..., min_length=1, max_length=10)
-    mobile: str = Field(..., pattern=r'^[0-9]{10}$')
+    year: Optional[str] = Field(None, max_length=10)
+    mobile: Optional[str] = Field(None, pattern=r'^[0-9]{10}$')
     is_leader: bool = False
     
     @validator('mobile')
     def validate_mobile(cls, v):
-        """Validate mobile number is exactly 10 digits."""
-        if not v.isdigit() or len(v) != 10:
-            raise ValueError('Mobile number must be exactly 10 digits')
+        """Validate mobile number is exactly 10 digits if provided."""
+        if v is not None:
+            if not v.isdigit() or len(v) != 10:
+                raise ValueError('Mobile number must be exactly 10 digits')
         return v
 
 
@@ -162,13 +163,13 @@ class HackathonTeamCreate(BaseModel):
     """Schema for creating a hackathon team."""
     event_name: str = Field(..., min_length=1, max_length=200)
     team_name: str = Field(..., min_length=1, max_length=100)
-    team_members: List[TeamMemberBase] = Field(..., min_items=4, max_items=4)
+    team_members: List[TeamMemberBase] = Field(..., min_items=2, max_items=4)
     
     @validator('team_members')
     def validate_team_members(cls, v):
-        """Validate exactly 4 members and exactly 1 team leader."""
-        if len(v) != 4:
-            raise ValueError('Team must have exactly 4 members')
+        """Validate 2-4 members and exactly 1 team leader."""
+        if not (2 <= len(v) <= 4):
+            raise ValueError('Team must have between 2 and 4 members')
         
         leaders = [m for m in v if m.is_leader]
         if len(leaders) != 1:
