@@ -16,7 +16,7 @@ const ContactSection = () => {
         setStatus('success');
     };
 
-    const mailtoLink = `mailto:cyberclub@apsit.edu.in?subject=Message from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message)}%0A%0AReply to: ${encodeURIComponent(formData.email)}`;
+    const mailtoLink = `mailto:cybersecurityclub@apsit.edu.in?subject=Message from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message)}%0A%0AReply to: ${encodeURIComponent(formData.email)}`;
 
     return (
         <section id="contact" className="section-wrapper">
@@ -32,7 +32,7 @@ const ContactSection = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                         {[
                             { icon: 'fa-location-dot', color: 'var(--accent-primary)', label: 'Location', value: 'APSIT, Thane, Maharashtra' },
-                            { icon: 'fa-envelope', color: 'var(--accent-alert)', label: 'Email', value: 'cyberclub@apsit.edu.in' },
+                            { icon: 'fa-envelope', color: 'var(--accent-alert)', label: 'Email', value: 'cybersecurityclub@apsit.edu.in' },
                         ].map(item => (
                             <div key={item.label} style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                 <div style={{ width: '40px', height: '40px', background: `${item.color}18`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>

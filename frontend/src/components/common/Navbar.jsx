@@ -48,9 +48,9 @@ const Navbar = ({ isDarkMode, toggleTheme }) => {
 
     return (
         <nav>
-            <div className="logo hover-trigger" onClick={() => scrollToSection('home')}>
-                <i className="fa-solid fa-shield-cat"></i>
-                <span>APSIT<span style={{ color: 'var(--accent-primary)' }}>.CYBERSEC</span></span>
+            <div className="logo hover-trigger" onClick={() => scrollToSection('home')} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <img src="/images/Club Logo.png" alt="APSIT CyberSec" style={{ height: '40px', width: 'auto' }} />
+                <span>CYBERSECURITY<span style={{ color: 'var(--accent-primary)' }}>.CLUB</span></span>
             </div>
 
             <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
@@ -61,7 +61,7 @@ const Navbar = ({ isDarkMode, toggleTheme }) => {
                 <li><a onClick={() => scrollToSection('members')} className={`nav-link hover-trigger ${activeSection === 'members' ? 'active' : ''}`}>Squadron</a></li>
                 <li><a onClick={() => scrollToSection('contact')} className={`nav-link hover-trigger ${activeSection === 'contact' ? 'active' : ''}`}>Contact</a></li>
                 <li><a onClick={() => { navigate('/learning'); setIsMenuOpen(false); }} className="nav-link hover-trigger">Learning Lab</a></li>
-                <li><a onClick={() => { navigate('/resources'); setIsMenuOpen(false); }} className="nav-link hover-trigger">Resources</a></li>
+                {/* <li><a onClick={() => { navigate('/resources'); setIsMenuOpen(false); }} className="nav-link hover-trigger">Resources</a></li> */}
 
                 <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     {isLoggedIn ? (

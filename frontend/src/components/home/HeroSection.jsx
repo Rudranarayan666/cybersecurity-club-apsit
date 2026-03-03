@@ -12,8 +12,6 @@ const HeroSection = () => {
     const [twIndex, setTwIndex] = useState(0);
     const [twText, setTwText] = useState('');
     const [twDeleting, setTwDeleting] = useState(false);
-    const [counter, setCounter] = useState({ members: 0, resources: 0, events: 0 });
-    const counterDone = useRef(false);
     const heroRef = useRef(null);
 
     /* typewriter effect */
@@ -32,28 +30,6 @@ const HeroSection = () => {
         }
         return () => clearTimeout(timeout);
     }, [twText, twDeleting, twIndex]);
-
-    /* counter animation on mount */
-    useEffect(() => {
-        if (counterDone.current) return;
-        counterDone.current = true;
-        const targets = { members: 500, resources: 50, events: 12 };
-        const duration = 2000;
-        const steps = 60;
-        let step = 0;
-        const interval = setInterval(() => {
-            step++;
-            const progress = Math.min(step / steps, 1);
-            const ease = 1 - Math.pow(1 - progress, 3);
-            setCounter({
-                members: Math.round(targets.members * ease),
-                resources: Math.round(targets.resources * ease),
-                events: Math.round(targets.events * ease),
-            });
-            if (step >= steps) clearInterval(interval);
-        }, duration / steps);
-        return () => clearInterval(interval);
-    }, []);
 
     const scrollTo = (id) => {
         const el = document.getElementById(id);
@@ -129,21 +105,6 @@ const HeroSection = () => {
                         <i className="fa-solid fa-terminal" />
                         <span>Start Learning</span>
                     </button>
-                </div>
-
-                {/* Stats row */}
-                <div className="hero-stats">
-                    {[
-                        { value: counter.members + '+', label: 'Members', icon: 'fa-solid fa-users' },
-                        { value: counter.resources + '+', label: 'Resources', icon: 'fa-solid fa-book-open' },
-                        { value: counter.events + '+', label: 'Events', icon: 'fa-solid fa-calendar-check' },
-                    ].map(s => (
-                        <div key={s.label} className="hero-stat-item">
-                            <i className={s.icon + ' hero-stat-icon'} />
-                            <span className="hero-stat-value">{s.value}</span>
-                            <span className="hero-stat-label">{s.label}</span>
-                        </div>
-                    ))}
                 </div>
             </div>
 
