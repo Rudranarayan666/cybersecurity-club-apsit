@@ -74,6 +74,10 @@
             --font-body: 'DM Sans', sans-serif;
             --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
             --theme-transition: background 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+
+            /* NEW: Gradient tokens */
+            --gradient-cyber: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            --glow-primary: 0 0 15px rgba(0, 102, 255, 0.4);
         }
 
         /* --- DARK MODE OVERRIDES --- */
@@ -204,6 +208,60 @@
             margin-top: -30px;
         }
 
+        /* PREMIUM ANIMATION CLASSES */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--text-main), var(--accent-primary), var(--accent-secondary), var(--text-main));
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            opacity: 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translate(-50%, 0);
+            }
+
+            40% {
+                transform: translate(-50%, -10px);
+            }
+
+            60% {
+                transform: translate(-50%, -5px);
+            }
+        }
+
+        /* SECTION DIVIDERS */
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            opacity: 0.2;
+            margin: 0;
+        }
+
         /* =========================================
            3. UI COMPONENTS
            ========================================= */
@@ -297,6 +355,15 @@
             position: relative;
             z-index: 1;
             overflow: hidden;
+        }
+
+        .nav-link.active {
+            color: #fff;
+        }
+
+        .nav-link.active::before {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .nav-link::before {
@@ -521,6 +588,26 @@
             box-shadow: var(--shadow-hover);
             background: var(--bg-glass-hover);
             border-color: var(--accent-secondary);
+            box-shadow: 0 0 20px rgba(0, 194, 255, 0.2);
+        }
+
+        .card:hover .fa-solid {
+            animation: icon-pulse 0.5s var(--ease-smooth);
+        }
+
+        @keyframes icon-pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+                filter: brightness(1.3) drop-shadow(0 0 10px var(--accent-primary));
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .card h3 {
@@ -1146,6 +1233,37 @@
 
         .member-card-v2:hover .avatar-box img {
             transform: scale(1.05);
+        }
+
+        .avatar-box::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(90deg, var(--team-color), transparent, var(--team-color));
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            /* Standard property for compatibility */
+            mask:
+                linear-gradient(#fff 0 0) content-box exclude,
+                linear-gradient(#fff 0 0);
+            animation: rotate-gradient 4s linear infinite;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .member-card-v2:hover .avatar-box::before {
+            opacity: 1;
+        }
+
+        @keyframes rotate-gradient {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .member-name {
@@ -1812,7 +1930,7 @@
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-tag">[ System Status: SECURE v2 ]</div>
-                    <h1 class="hero-title">
+                    <h1 class="hero-title gradient-text">
                         <span class="glitch" data-text="SECURE">SECURE</span><br>
                         <span class="glitch glow-text" data-text="THE UNSEEN">THE UNSEEN</span>
                     </h1>
@@ -1833,11 +1951,14 @@
                     </div>
                 </div>
             </div>
+            <div class="scroll-indicator"><i class="fa-solid fa-chevron-down"></i></div>
         </section>
+
+        <div class="section-divider"></div>
 
         <section id="about" class="section-wrapper">
             <div class="section-header">
-                <h2 class="section-title">About</h2>
+                <h2 class="section-title gradient-text">About</h2>
                 <p class="section-subtitle">The nexus of student-driven cybersecurity excellence.</p>
             </div>
 
@@ -1877,9 +1998,11 @@
             </div>
         </section>
 
+        <div class="section-divider"></div>
+
         <section id="learn" class="section-wrapper">
             <div class="section-header">
-                <h2 class="section-title">Learning <span>Roadmap</span></h2>
+                <h2 class="section-title gradient-text">Learning <span>Roadmap</span></h2>
                 <p class="section-subtitle">A structured path from novice to cyber-operative.</p>
             </div>
 
@@ -2032,9 +2155,11 @@
 
 
 
+        <div class="section-divider"></div>
+
         <section id="events" class="section-wrapper">
             <div class="section-header">
-                <h2 class="section-title">Club <span>Events</span></h2>
+                <h2 class="section-title gradient-text">Club <span>Events</span></h2>
             </div>
             <h3 style="color:var(--text-muted); margin-bottom:1.5rem;">Upcoming</h3>
             <div class="grid">
@@ -2055,9 +2180,11 @@
             <div class="grid" id="pastEventsGrid"></div>
         </section>
 
+        <div class="section-divider"></div>
+
         <section id="members" class="section-wrapper">
             <div class="section-header">
-                <h2 class="section-title">The <span>Squadron</span></h2>
+                <h2 class="section-title gradient-text">The <span>Squadron</span></h2>
                 <p class="section-subtitle">Meet the minds securing the network.</p>
             </div>
 
@@ -2065,22 +2192,26 @@
                 <div class="team-badge style-faculty">Faculty Mentors</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-faculty hover-trigger">
+                <div class="member-card-v2 style-faculty hover-trigger" data-tilt data-tilt-max="10"
+                    data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/faculty1.jpg" alt="Prof. Manjusha K."></div>
                     <div class="member-name">Prof. Manjusha K.</div>
                     <div class="member-role">Lead Mentor</div>
                 </div>
-                <div class="member-card-v2 style-faculty hover-trigger">
+                <div class="member-card-v2 style-faculty hover-trigger" data-tilt data-tilt-max="10"
+                    data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/faculty2.jpg" alt="Prof. Sneha Dalvi"></div>
                     <div class="member-name">Prof. Sneha Dalvi</div>
                     <div class="member-role">Technical Mentor</div>
                 </div>
-                <div class="member-card-v2 style-faculty hover-trigger">
+                <div class="member-card-v2 style-faculty hover-trigger" data-tilt data-tilt-max="10"
+                    data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/faculty3.jpg" alt="Prof. Randeep Kalhon"></div>
                     <div class="member-name">Prof. Randeep Kalhon</div>
                     <div class="member-role">Subject Expert</div>
                 </div>
-                <div class="member-card-v2 style-faculty hover-trigger">
+                <div class="member-card-v2 style-faculty hover-trigger" data-tilt data-tilt-max="10"
+                    data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/faculty4.jpg" alt="Prof. Saylee Lapalikar"></div>
                     <div class="member-name">Prof. Saylee Lapalikar</div>
                     <div class="member-role">Subject Expert</div>
@@ -2091,17 +2222,20 @@
                 <div class="team-badge style-lead">Club Leads</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-lead hover-trigger">
+                <div class="member-card-v2 style-lead hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/pushkar.jpg" alt="Pushkar Karnik"></div>
                     <div class="member-name">Pushkar Karnik</div>
                     <div class="member-role">President</div>
                 </div>
-                <div class="member-card-v2 style-lead hover-trigger">
+                <div class="member-card-v2 style-lead hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/harsh.jpg" alt="Harsh Koladkar"></div>
                     <div class="member-name">Harsh Koladkar</div>
                     <div class="member-role">Vice President</div>
                 </div>
-                <div class="member-card-v2 style-lead hover-trigger">
+                <div class="member-card-v2 style-lead hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/shreyash.jpg" alt="Shreyash Narvekar"></div>
                     <div class="member-name">Shreyash Narvekar</div>
                     <div class="member-role">Technical Head</div>
@@ -2112,22 +2246,26 @@
                 <div class="team-badge style-core">Core Heads</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-core hover-trigger">
+                <div class="member-card-v2 style-core hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/rudra.jpg" alt="Rudra Sahu"></div>
                     <div class="member-name">Rudra Sahu</div>
                     <div class="member-role">Technical Co-Head</div>
                 </div>
-                <div class="member-card-v2 style-core hover-trigger">
+                <div class="member-card-v2 style-core hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/shubham.jpg" alt="Shubham Pawaskar"></div>
                     <div class="member-name">Shubham Pawaskar</div>
                     <div class="member-role">Technical Co-Head</div>
                 </div>
-                <div class="member-card-v2 style-core hover-trigger">
+                <div class="member-card-v2 style-core hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/sejal.jpg" alt="Sejal Naik"></div>
                     <div class="member-name">Sejal Naik</div>
                     <div class="member-role">Design Head</div>
                 </div>
-                <div class="member-card-v2 style-core hover-trigger">
+                <div class="member-card-v2 style-core hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/pratham.jpg" alt="Pratham Shetty"></div>
                     <div class="member-name">Pratham Shetty</div>
                     <div class="member-role">PR Head</div>
@@ -2138,22 +2276,26 @@
                 <div class="team-badge style-lit">Literature Team</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-lit hover-trigger">
+                <div class="member-card-v2 style-lit hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/bhumika.jpg" alt="Bhumika Pandhare"></div>
                     <div class="member-name">Bhumika Pandhare</div>
                     <div class="member-role">Literature Head</div>
                 </div>
-                <div class="member-card-v2 style-lit hover-trigger">
+                <div class="member-card-v2 style-lit hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/namrata.jpg" alt="Namrata Mane"></div>
                     <div class="member-name">Namrata Mane</div>
                     <div class="member-role">Literature Co-Head</div>
                 </div>
-                <div class="member-card-v2 style-lit hover-trigger">
+                <div class="member-card-v2 style-lit hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/rinkal.jpg" alt="Rinkal Mishra"></div>
                     <div class="member-name">Rinkal Mishra</div>
                     <div class="member-role">Literature Co-Head</div>
                 </div>
-                <div class="member-card-v2 style-lit hover-trigger">
+                <div class="member-card-v2 style-lit hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/kshitija.jpg" alt="Kshitija Patil"></div>
                     <div class="member-name">Kshitija Patil</div>
                     <div class="member-role">Literature Co-Head</div>
@@ -2164,12 +2306,14 @@
                 <div class="team-badge style-event">Event Team</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-event hover-trigger">
+                <div class="member-card-v2 style-event hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/siddharth.jpg" alt="Siddharth Kumar"></div>
                     <div class="member-name">Siddharth Kumar</div>
                     <div class="member-role">Event Head</div>
                 </div>
-                <div class="member-card-v2 style-event hover-trigger">
+                <div class="member-card-v2 style-event hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/tanushree.jpg" alt="Tanushree Gabhane"></div>
                     <div class="member-name">Tanushree Gabhane</div>
                     <div class="member-role">Event Co-Head</div>
@@ -2180,12 +2324,14 @@
                 <div class="team-badge style-media">Media Team</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 4rem;">
-                <div class="member-card-v2 style-media hover-trigger">
+                <div class="member-card-v2 style-media hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/aditya.jpg" alt="Aditya Bhor"></div>
                     <div class="member-name">Aditya Bhor</div>
                     <div class="member-role">Photography Head</div>
                 </div>
-                <div class="member-card-v2 style-media hover-trigger">
+                <div class="member-card-v2 style-media hover-trigger" data-tilt data-tilt-max="10" data-tilt-speed="400"
+                    data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/nakshi.jpg" alt="Nakshi Goda"></div>
                     <div class="member-name">Nakshi Goda</div>
                     <div class="member-role">Social Media Head</div>
@@ -2196,7 +2342,8 @@
                 <div class="team-badge style-publicity">Publicity Team</div>
             </div>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-                <div class="member-card-v2 style-publicity hover-trigger">
+                <div class="member-card-v2 style-publicity hover-trigger" data-tilt data-tilt-max="10"
+                    data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.3">
                     <div class="avatar-box"><img src="images/vaibhavi.jpg" alt="Vaibhavi Naik"></div>
                     <div class="member-name">Vaibhavi Naik</div>
                     <div class="member-role">Publicity Head</div>
@@ -2209,6 +2356,8 @@
             </div>
 
         </section>
+
+        <div class="section-divider"></div>
 
         <section id="contact" class="section-wrapper">
             <div class="grid" style="grid-template-columns: 1fr 1fr;">
@@ -2239,12 +2388,44 @@
                     </p>
                     <div style="display:flex; gap:1rem;">
                         <a href="https://www.linkedin.com/company/cybersecurity-club-apsit/" target="_blank"
-                            class="btn btn-secondary" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                            class="btn btn-secondary social-btn-linkedin" title="LinkedIn"><i
+                                class="fa-brands fa-linkedin"></i></a>
                         <a href="https://instagram.com/cybersecurityclub_apsit?igshid=MzRlODBiNWFlZA==" target="_blank"
-                            class="btn btn-secondary" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                            class="btn btn-secondary social-btn-instagram" title="Instagram"><i
+                                class="fa-brands fa-instagram"></i></a>
                         <a href="https://chat.whatsapp.com/JIAYxYq1PXz7KduUqLkUJM" target="_blank"
-                            class="btn btn-secondary" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                            class="btn btn-secondary social-btn-whatsapp" title="WhatsApp"><i
+                                class="fa-brands fa-whatsapp"></i></a>
                     </div>
+
+                    <style>
+                        .social-btn-linkedin:hover {
+                            background: #0A66C2 !important;
+                            color: white !important;
+                            border-color: #0A66C2 !important;
+                        }
+
+                        .social-btn-instagram:hover {
+                            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%) !important;
+                            color: white !important;
+                            border-color: transparent !important;
+                        }
+
+                        .social-btn-whatsapp:hover {
+                            background: #25D366 !important;
+                            color: white !important;
+                            border-color: #25D366 !important;
+                        }
+
+                        .terminal-contact {
+                            font-family: 'Space Mono', monospace;
+                            /* Fallback to monospace if Space Mono not loaded */
+                            background: rgba(0, 0, 0, 0.2);
+                            padding: 1.5rem;
+                            border-radius: 8px;
+                            border-left: 3px solid var(--accent-primary);
+                        }
+                    </style>
                 </div>
             </div>
         </section>
@@ -2403,6 +2584,14 @@
             const canvas = document.getElementById('webgl-canvas');
             if (!canvas) return;
 
+            // GSAP STAGGERED ENTRANCE
+            const tl = gsap.timeline();
+            tl.from(".hero-tag", { opacity: 0, y: -20, duration: 0.8, ease: "power3.out" })
+                .from(".hero-title .glitch", { opacity: 0, y: 30, stagger: 0.2, duration: 1, ease: "power4.out" }, "-=0.4")
+                .from(".hero-desc", { opacity: 0, duration: 1 }, "-=0.6")
+                .from(".hero-btns .btn", { opacity: 0, x: -20, stagger: 0.2, duration: 0.8, ease: "back.out(1.7)" }, "-=0.6")
+                .to(".scroll-indicator", { opacity: 0.6, duration: 1 }, "-=0.2");
+
             // --- SCENE SETUP ---
             scene = new THREE.Scene();
             isDarkMode = document.body.classList.contains('dark-mode');
@@ -2511,6 +2700,23 @@
             window.addEventListener('scroll', () => { scrollY = window.scrollY; });
 
             // --- RENDER LOOP ---
+            gsap.registerPlugin(ScrollTrigger);
+
+            // STAGGERED REVEALS FOR CARDS
+            gsap.utils.toArray('.card, .platform-card, .cert-card, .member-card-v2').forEach(card => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 90%",
+                        toggleActions: "play none none reverse"
+                    },
+                    opacity: 0,
+                    y: 30,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            });
+
             const animate = () => {
                 requestAnimationFrame(animate);
                 const time = clock.getElapsedTime();
@@ -2612,7 +2818,8 @@
 
             toggleButton.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
-                const isDark = body.classList.contains('dark-mode');
+                isDarkMode = body.classList.contains('dark-mode'); // Sync global state
+                const isDark = isDarkMode;
                 iconSpan.textContent = isDark ? '☀️' : '🌙';
 
                 if (scene) {
@@ -2634,44 +2841,49 @@
             let width = canvas.width = window.innerWidth;
             let height = canvas.height = window.innerHeight;
 
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%""\'#&_(),.;:?!\\|{}<>[]^~';
+            // Refined character set: binary + technical symbols
+            const characters = '01{}[ ]<>/\$#&';
             const charArray = characters.split('');
 
-            const fontSize = 14;
+            const fontSize = 16;
             let columns = width / fontSize;
             let drops = [];
 
-            // Initialize drops
+            // Initialize drops at random Y positions
             for (let x = 0; x < columns; x++) {
-                drops[x] = Math.random() * height; // Start at random Y positions
+                drops[x] = Math.random() * (height / fontSize);
             }
 
             const draw = () => {
-                // Semi-transparent black to create trailing effect (faster fade)
-                ctx.fillStyle = isDarkMode ? 'rgba(2, 4, 8, 0.2)' : 'rgba(244, 247, 246, 0.2)';
+                // Background fill with slight trails
+                ctx.fillStyle = isDarkMode ? 'rgba(5, 10, 16, 0.15)' : 'rgba(244, 247, 246, 0.15)';
                 ctx.fillRect(0, 0, width, height);
 
-                ctx.fillStyle = isDarkMode ? 'rgba(0, 194, 255, 0.08)' : 'rgba(0, 102, 255, 0.05)'; // Very faint cyan
-                ctx.font = fontSize + 'px monospace';
+                ctx.font = `bold ${fontSize}px monospace`;
 
                 for (let i = 0; i < drops.length; i++) {
                     const text = charArray[Math.floor(Math.random() * charArray.length)];
 
-                    // Add faint head to the falling line occasionally
-                    if (Math.random() > 0.95) {
-                        ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 102, 255, 0.3)';
-                    } else {
-                        ctx.fillStyle = isDarkMode ? 'rgba(0, 194, 255, 0.08)' : 'rgba(0, 102, 255, 0.05)';
-                    }
+                    // Draw the falling character
+                    // Use higher opacity for the "head" of the drop
+                    const xPos = i * fontSize;
+                    const yPos = drops[i] * fontSize;
 
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    // Matrix Head (Glow effect)
+                    ctx.fillStyle = isDarkMode ? 'rgba(255, 255, 255, 0.35)' : 'rgba(0, 102, 255, 0.35)';
+                    ctx.fillText(text, xPos, yPos);
 
-                    // Drop reset logic
-                    if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    // Body of the stream (Subtle but visible)
+                    ctx.fillStyle = isDarkMode ? 'rgba(0, 194, 255, 0.12)' : 'rgba(0, 80, 200, 0.1)';
+                    ctx.fillText(charArray[Math.floor(Math.random() * charArray.length)], xPos, yPos - fontSize);
+
+                    // Reset drop if it hits bottom with a bit of randomness
+                    if (yPos > height && Math.random() > 0.975) {
                         drops[i] = 0;
                     }
 
-                    drops[i]++;
+                    // Increment drop position (Speed)
+                    drops[i] += 0.75;
                 }
 
                 requestAnimationFrame(draw);
@@ -2752,13 +2964,17 @@
                 <p>${e.desc}</p>
                 ${!isPast ? `<button class="btn btn-secondary" style="margin-top:1rem; width:100%" onclick="openEventRegistration('${e.title}')">Register</button>` : ''}
             </div>`;
-            document.getElementById('upcomingEventsGrid').innerHTML = events.filter(e => e.status === 'upcoming').map(e => createCard(e)).join('');
-            document.getElementById('pastEventsGrid').innerHTML = events.filter(e => e.status === 'past').map(e => createCard(e, true)).join('');
+            const upcomingGrid = document.getElementById('upcomingEventsGrid');
+            const pastGrid = document.getElementById('pastEventsGrid');
+            if (upcomingGrid) upcomingGrid.innerHTML = events.filter(e => e.status === 'upcoming').map(e => createCard(e)).join('');
+            if (pastGrid) pastGrid.innerHTML = events.filter(e => e.status === 'past').map(e => createCard(e, true)).join('');
         }
 
         function filterResources(level) {
+            const grid = document.getElementById('resourcesGrid');
+            if (!grid) return; // Silent return if element not present
             const filtered = level === 'all' ? resources : resources.filter(r => r.level === level);
-            document.getElementById('resourcesGrid').innerHTML = filtered.map(r => `
+            grid.innerHTML = filtered.map(r => `
             <div class="card hover-trigger">
                 <i class="fa-solid fa-file-lines" style="font-size:2rem; color:var(--accent-secondary); margin-bottom:1rem;"></i>
                 <h3>${r.title}</h3>
@@ -2962,6 +3178,24 @@
                 document.querySelector('.hamburger').addEventListener('click', () => {
                     document.querySelector('.nav-menu').classList.toggle('active');
                 });
+
+                // --- NAVIGATION OBSERVER ---
+                const navObserverOptions = { threshold: 0.3 };
+                const navObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const id = entry.target.getAttribute('id');
+                            document.querySelectorAll('.nav-link').forEach(link => {
+                                link.classList.remove('active');
+                                if (link.getAttribute('onclick')?.includes(`'${id}'`)) {
+                                    link.classList.add('active');
+                                }
+                            });
+                        }
+                    });
+                }, navObserverOptions);
+
+                document.querySelectorAll('section').forEach(section => navObserver.observe(section));
             } catch (globalError) {
                 console.error("Critical UI Initialization Error:", globalError);
             } finally {
