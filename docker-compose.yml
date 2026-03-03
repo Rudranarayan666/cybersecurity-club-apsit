@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: cybersec_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cybersec_club}
+      POSTGRES_USER: ${POSTGRES_USER:-cybersec_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_in_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cybersec_admin} -d ${POSTGRES_DB:-cybersec_club}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cybersec_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cybersec_admin}:${POSTGRES_PASSWORD:-changeme_in_production}@db:5432/${POSTGRES_DB:-cybersec_club}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY must be set}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-10}
+      DEBUG: ${DEBUG:-false}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    command: >
+      sh -c "
+        alembic upgrade head &&
+        python scripts/seed_db.py &&
+        uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+      "
+
+  # Vite/React Frontend (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cybersec_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    environment:
+      - VITE_API_URL=/api
+
+  # Grafana — Monitoring dashboard
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: cybersec_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-changeme_grafana}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s/grafana/"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads_data:
+    driver: local
+  grafana_data:
+    driver: local

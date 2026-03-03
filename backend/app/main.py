@@ -198,6 +198,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     """Handle validation errors."""
+    logger.error("Validation error for %s %s: %s", request.method, request.url.path, exc.errors())
     errors = {}
     for error in exc.errors():
         field = ".".join(str(loc) for loc in error["loc"] if loc != "body")

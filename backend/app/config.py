@@ -70,6 +70,14 @@ class Settings(BaseSettings):
 
     def validate_jwt_secret(self):
         """Validate JWT secret key is not a placeholder."""
+        placeholder = "dev-secret-key-please-change-in-production-min-32-chars"
+        
+        if not self.debug and self.jwt_secret_key == placeholder:
+            raise ValueError(
+                "JWT_SECRET_KEY is still set to the default placeholder! "
+                "Change it in your .env file before running in production."
+            )
+            
         if "your" in self.jwt_secret_key.lower() or len(self.jwt_secret_key) < 32:
             import warnings
             warnings.warn(

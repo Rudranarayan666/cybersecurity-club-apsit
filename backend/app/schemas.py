@@ -144,10 +144,9 @@ class TeamMemberBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     moodle_id: str = Field(..., min_length=1, max_length=20)
-    roll_no: Optional[str] = Field(None, max_length=20)
     division: Optional[str] = Field(None, max_length=5)
     department: str = Field(..., min_length=1, max_length=100)
-    year: Optional[str] = Field(None, max_length=10)
+    year: Optional[str] = Field(None, max_length=20)
     mobile: Optional[str] = Field(None, pattern=r'^[0-9]{10}$')
     is_leader: bool = False
     
@@ -175,13 +174,13 @@ class HackathonTeamCreate(BaseModel):
     """Schema for creating a hackathon team."""
     event_name: str = Field(..., min_length=1, max_length=200)
     team_name: str = Field(..., min_length=1, max_length=100)
-    team_members: List[TeamMemberBase] = Field(..., min_items=2, max_items=4)
+    team_members: List[TeamMemberBase] = Field(..., min_items=3, max_items=4)
     
     @validator('team_members')
     def validate_team_members(cls, v):
-        """Validate 2-4 members and exactly 1 team leader."""
-        if not (2 <= len(v) <= 4):
-            raise ValueError('Team must have between 2 and 4 members')
+        """Validate 3-4 members and exactly 1 team leader."""
+        if not (3 <= len(v) <= 4):
+            raise ValueError('Team must have between 3 and 4 members')
         
         leaders = [m for m in v if m.is_leader]
         if len(leaders) != 1:
@@ -196,11 +195,10 @@ class TeamMemberResponse(BaseModel):
     name: str
     email: str
     moodle_id: str
-    roll_no: str
-    division: str
+    division: Optional[str] = None
     department: str
-    year: str
-    mobile: str
+    year: Optional[str] = None
+    mobile: Optional[str] = None
     is_leader: bool
     created_at: datetime
     
