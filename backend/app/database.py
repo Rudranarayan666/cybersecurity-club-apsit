@@ -4,22 +4,30 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 
-# Build engine options
-engine_kwargs = {
-    "pool_size": settings.db_pool_size,
-    "max_overflow": settings.db_max_overflow,
-    "pool_pre_ping": True,       # Verify connections before using
-    "pool_recycle": 1800,        # Recycle connections after 30 minutes
-    "pool_timeout": 30,          # Wait up to 30s for a connection from pool
-    "echo": settings.debug,
-}
+# Build engine options — pool args not supported by SQLite
+is_sqlite = settings.database_url.startswith("sqlite")
 
-# Enable SSL for production PostgreSQL (when URL contains sslmode)
-if "sslmode" in settings.database_url:
-    engine_kwargs["connect_args"] = {"sslmode": "require"}
+if is_sqlite:
+    engine_kwargs = {
+        "connect_args": {"check_same_thread": False},
+        "echo": settings.debug,
+    }
+else:
+    engine_kwargs = {
+        "pool_size": settings.db_pool_size,
+        "max_overflow": settings.db_max_overflow,
+        "pool_pre_ping": True,
+        "pool_recycle": 1800,
+        "pool_timeout": 30,
+        "echo": settings.debug,
+    }
+    # Add SSL for Render/production if not already in the URL
+    if "sslmode" not in settings.database_url:
+        engine_kwargs["connect_args"] = {"sslmode": "require"}
 
 # Create database engine
 engine = create_engine(settings.database_url, **engine_kwargs)
+
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
