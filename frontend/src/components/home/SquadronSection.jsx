@@ -42,42 +42,63 @@ const SquadronSection = () => {
                 {FACULTY.map(f => (
                     <div
                         key={f.name}
-                        className="sq-faculty-card hover-trigger"
+                        className="sq-faculty-flip-container hover-trigger"
                         style={{ '--fc': f.color }}
                     >
-                        {/* Glassmorphic shine */}
-                        <div className="sq-faculty-shine" />
+                        <div className="sq-faculty-flipper">
+                            {/* ── FRONT FACE ── */}
+                            <div className="sq-faculty-card front">
+                                {/* Glassmorphic shine */}
+                                <div className="sq-faculty-shine" />
 
-                        {/* Avatar ring — skeuomorphic frame */}
-                        <div
-                            className="sq-faculty-ring"
-                            style={{ borderColor: f.color + '66', boxShadow: `0 0 18px ${f.color}33` }}
-                        >
-                            <img
-                                src={f.img}
-                                alt={f.name}
-                                className="sq-faculty-img"
-                                loading="lazy"
-                                onError={e => {
-                                    e.currentTarget.style.display = 'none';
-                                    e.currentTarget.nextSibling.style.display = 'flex';
-                                }}
-                            />
-                            <div
-                                className="sq-faculty-fallback"
-                                style={{ display: 'none', background: f.color + '22', color: f.color }}
-                            >
-                                {f.emoji}
+                                {/* Avatar ring — skeuomorphic frame */}
+                                <div
+                                    className="sq-faculty-ring"
+                                    style={{ borderColor: f.color + '66', boxShadow: `0 0 18px ${f.color}33` }}
+                                >
+                                    <img
+                                        src={f.img}
+                                        alt={f.name}
+                                        className="sq-faculty-img"
+                                        loading="lazy"
+                                        onError={e => {
+                                            e.currentTarget.style.display = 'none';
+                                            e.currentTarget.nextSibling.style.display = 'flex';
+                                        }}
+                                    />
+                                    <div
+                                        className="sq-faculty-fallback"
+                                        style={{ display: 'none', background: f.color + '22', color: f.color }}
+                                    >
+                                        {f.emoji}
+                                    </div>
+                                </div>
+
+                                <div className="sq-faculty-info">
+                                    <div className="sq-faculty-name">{f.name}</div>
+                                    <div className="sq-faculty-role" style={{ color: f.color }}>{f.role}</div>
+                                </div>
+
+                                {/* Skeuomorphic corner accent */}
+                                <div className="sq-faculty-corner" style={{ borderColor: f.color + '44' }} />
+                            </div>
+
+                            {/* ── BACK FACE ── */}
+                            <div className="sq-faculty-card back">
+                                <div className="sq-faculty-shine" />
+                                <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
+                                    <h4 style={{ color: f.color, marginBottom: '0.75rem', fontFamily: 'var(--font-head)', fontSize: '1.1rem' }}>{f.name}</h4>
+                                    <p style={{ fontSize: '0.85rem', color: '#ccc', lineHeight: '1.5', marginBottom: '1.25rem' }}>
+                                        Cybersecurity veteran and subject matter expert. Dedicated to mentoring the next generation of operators in threat analysis and tactics.
+                                    </p>
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '0.9rem', color: f.color, fontWeight: 'bold' }}>
+                                        <span><i className="fa-solid fa-shield-halved" style={{ marginRight: '4px' }}></i> SEC+</span>
+                                        <span><i className="fa-solid fa-graduation-cap" style={{ marginRight: '4px' }}></i> PhD</span>
+                                    </div>
+                                </div>
+                                <div className="sq-faculty-corner" style={{ borderColor: f.color + '44' }} />
                             </div>
                         </div>
-
-                        <div className="sq-faculty-info">
-                            <div className="sq-faculty-name">{f.name}</div>
-                            <div className="sq-faculty-role" style={{ color: f.color }}>{f.role}</div>
-                        </div>
-
-                        {/* Skeuomorphic corner accent */}
-                        <div className="sq-faculty-corner" style={{ borderColor: f.color + '44' }} />
                     </div>
                 ))}
             </div>

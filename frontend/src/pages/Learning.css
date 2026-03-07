@@ -18,6 +18,7 @@
     inset: 0;
     pointer-events: none;
     z-index: 0;
+    margin-top: calc(var(--scroll-y, 0px) * 0.4);
 }
 
 .lp-star {
@@ -60,6 +61,7 @@
     top: -100px;
     left: -100px;
     animation-delay: 0s;
+    margin-top: calc(var(--scroll-y, 0px) * 0.2);
 }
 
 .lp-orb-2 {
@@ -69,6 +71,7 @@
     bottom: -80px;
     right: -80px;
     animation-delay: -7s;
+    margin-top: calc(var(--scroll-y, 0px) * 0.35);
 }
 
 @keyframes orb-drift {
@@ -258,6 +261,10 @@
     color: var(--text-main);
 }
 
+.lp-tab:active {
+    transform: scale(0.96);
+}
+
 .lp-tab.active {
     background: linear-gradient(135deg, rgba(var(--tab-color-rgb, 0, 102, 255), 0.15), rgba(var(--tab-color-rgb, 0, 102, 255), 0.05));
     border-color: var(--tab-color, var(--accent-primary));
@@ -358,6 +365,16 @@
         inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
+.lp-module-card:active {
+    transform: scale(0.97);
+}
+
+@media (max-width: 640px) {
+    .lp-module-card {
+        padding: 1.25rem;
+    }
+}
+
 .lp-module-card::before {
     content: '';
     position: absolute;
@@ -366,7 +383,7 @@
     background: radial-gradient(ellipse at 30% 20%, var(--glow, rgba(0, 102, 255, 0.1)) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
-    opacity: 0;
+    opacity: 0.3;
     transition: opacity 0.4s ease;
 }
 
@@ -434,9 +451,9 @@
     font-size: 1.6rem;
     /* Skeuomorphic bevel */
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-        0 4px 12px rgba(0, 0, 0, 0.2);
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+        0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .lp-card-meta {

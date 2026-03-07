@@ -370,6 +370,10 @@ nav::before {
     transform: scale(1);
 }
 
+.nav-link:active {
+    transform: scale(0.95);
+}
+
 .nav-btn-special {
     margin-left: 1.5rem;
     padding: 0.6rem 1.5rem;
@@ -497,6 +501,10 @@ nav::before {
     display: inline-block;
 }
 
+.btn:active {
+    transform: scale(0.95);
+}
+
 .btn-primary {
     background: var(--accent-primary);
     color: #fff;
@@ -543,7 +551,7 @@ nav::before {
 }
 
 .section-title {
-    font-family: var(--font-head);
+    font-family: 'Britney', cursive;
     font-size: 3.5rem;
     line-height: 1.1;
     color: var(--text-main);
@@ -566,20 +574,24 @@ nav::before {
    ========================================= */
 .card {
     background: var(--bg-glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--border-glass);
     border-radius: 16px;
     padding: 2.5rem;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     transition: all 0.4s var(--ease-smooth);
     position: relative;
     overflow: hidden;
 }
 
+.card:active {
+    transform: scale(0.97);
+}
+
 .card:hover {
     transform: translateY(-10px);
-    box-shadow: var(--shadow-hover);
+    box-shadow: var(--shadow-hover), 0 0 20px rgba(0, 102, 255, 0.15);
     background: var(--bg-glass-hover);
     border-color: var(--accent-secondary);
 }
@@ -723,14 +735,15 @@ nav::before {
     }
 }
 
-/* ── Headline ── */
 .hero-headline {
     margin: 0 0 1.4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1.05;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'Nippo', sans-serif;
+    text-shadow: 0 0 0px rgba(34, 211, 238, 0.05);
+    /* Further reduced glow */
 }
 
 .hero-line-1,
@@ -776,14 +789,18 @@ nav::before {
 
 /* Big typewriter word */
 .hero-word-type {
-    font-size: clamp(2.8rem, 8vw, 6rem);
-    font-weight: 900;
-    letter-spacing: -1px;
+    font-size: clamp(3.2rem, 9vw, 7rem);
+    /* Slightly larger */
+    font-weight: 500;
+    /* Adjust weight for Nippo to look cleaner */
+    letter-spacing: 2px;
+    font-family: 'Nippo', sans-serif;
     background: linear-gradient(135deg, #e2e8f0 0%, #818cf8 45%, #22d3ee 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 18px rgba(129, 140, 248, 0.45));
+    filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.15));
+    /* Reduced cyan glow */
 }
 
 /* Pipe cursor — thin and elegant */
@@ -810,26 +827,27 @@ nav::before {
 }
 
 .hero-word-of {
-    font-size: clamp(0.85rem, 2vw, 1.1rem);
-    font-weight: 500;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 400;
     color: #475569;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     text-transform: uppercase;
 }
 
 .hero-word-digital {
-    font-size: clamp(0.85rem, 2vw, 1.1rem);
-    font-weight: 800;
-    color: #818cf8;
-    letter-spacing: 4px;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 600;
+    color: #22d3ee;
+    letter-spacing: 5px;
     text-transform: uppercase;
+    text-shadow: 0 0 4px rgba(34, 211, 238, 0.1);
 }
 
 .hero-word-realm {
-    font-size: clamp(0.85rem, 2vw, 1.1rem);
-    font-weight: 800;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 600;
     color: #e2e8f0;
-    letter-spacing: 4px;
+    letter-spacing: 5px;
     text-transform: uppercase;
 }
 
@@ -988,6 +1006,7 @@ nav::before {
     overflow: hidden;
     pointer-events: none;
     z-index: 5;
+    margin-top: calc(var(--scroll-y, 0px) * 0.4);
 }
 
 .cyber-float-tag {
@@ -1040,6 +1059,7 @@ nav::before {
     pointer-events: none;
     z-index: 1;
     animation: ring-pulse 5s var(--delay, 0s) ease-out infinite;
+    margin-top: calc(var(--scroll-y, 0px) * 0.2);
 }
 
 @keyframes ring-pulse {
@@ -2463,7 +2483,8 @@ body.dark-mode .time-badge {
 
 .member-card-v2 {
     background: var(--bg-glass);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--border-glass);
     border-radius: 20px;
     padding: 2.5rem 1.5rem;
@@ -2471,12 +2492,17 @@ body.dark-mode .time-badge {
     transition: all 0.4s var(--ease-smooth);
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.member-card-v2:active {
+    transform: scale(0.97);
 }
 
 .member-card-v2:hover {
-    transform: translateY(-10px);
+    transform: translateY(-12px);
     background: var(--bg-glass-hover);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.2), 0 0 25px rgba(0, 102, 255, 0.15);
     border-color: var(--accent-primary);
 }
 
@@ -2508,10 +2534,16 @@ body.dark-mode .time-badge {
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s;
+    border-radius: 50%;
 }
 
 .member-card-v2:hover .member-img-v2 img {
     transform: scale(1.08);
+}
+
+.member-card-v2:hover .member-img-v2 {
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.4);
+    border-color: #fff;
 }
 
 .member-overlay-v2 {

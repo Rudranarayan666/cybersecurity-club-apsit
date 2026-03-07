@@ -50,7 +50,7 @@ const Navbar = ({ isDarkMode, toggleTheme }) => {
         <nav>
             <div className="logo hover-trigger" onClick={() => scrollToSection('home')} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <img src="/images/Club Logo.png" alt="APSIT CyberSec" style={{ height: '40px', width: 'auto' }} />
-                <span>CYBERSECURITY<span style={{ color: 'var(--accent-primary)' }}>.CLUB</span></span>
+                <span style={{ fontFamily: "'Nippo', sans-serif" }}>CYBERSECURITY<span style={{ color: 'var(--accent-primary)' }}>.CLUB</span></span>
             </div>
 
             <ul className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>

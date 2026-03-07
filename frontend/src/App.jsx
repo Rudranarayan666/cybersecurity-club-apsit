@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useParallax } from './hooks/useParallax';
 
 // Components
 import Navbar from './components/common/Navbar';
@@ -19,6 +20,8 @@ const Resources = lazy(() => import('./pages/Resources'));
 const AdminTeams = lazy(() => import('./pages/AdminTeams'));   // Admin teams dashboard
 
 function App() {
+  useParallax(); // Attach the global scroll listener for the --scroll-y CSS variable
+
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark' || !localStorage.getItem('theme');
   });
