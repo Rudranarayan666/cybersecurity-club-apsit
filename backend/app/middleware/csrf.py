@@ -6,6 +6,7 @@ import time
 from fastapi import Request, Response, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
+from app.config import settings
 
 # Endpoints that require CSRF validation (state-changing, not bearer-auth protected)
 CSRF_PROTECTED_PATHS = {
