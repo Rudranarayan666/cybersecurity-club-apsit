@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     # Rate Limiting
     rate_limit_enabled: bool = True
 
+    # CSRF
+    csrf_enabled: bool = True
+
     # Password Policy
     password_min_length: int = 8
     password_require_uppercase: bool = True

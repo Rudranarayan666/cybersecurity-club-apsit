@@ -74,21 +74,21 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         self.secret = secret
     
     async def dispatch(self, request: Request, call_next) -> Response:
-        # Skip CSRF entirely in debug/test mode
-        from app.config import settings
-        if settings.debug:
+        # Skip CSRF if disabled in environment
+        if not getattr(settings, "csrf_enabled", True) or settings.debug:
             return await call_next(request)
 
-        # Inject CSRF token cookie on GET requests to CSRF-protected paths
+        # Inject CSRF token cookie on GET requests
         if request.method == "GET":
             response = await call_next(request)
             if not request.cookies.get(CSRF_COOKIE):
                 token = generate_csrf_token(self.secret)
+                # Use SameSite=None for cross-domain support (Render -> Vercel)
                 response.set_cookie(
                     CSRF_COOKIE, token,
-                    httponly=False,  # Must be readable by JS
+                    httponly=False,
                     secure=True,
-                    samesite="strict",
+                    samesite="none",
                     max_age=TOKEN_EXPIRY
                 )
             return response
