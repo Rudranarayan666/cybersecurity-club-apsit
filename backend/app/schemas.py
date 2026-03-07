@@ -144,18 +144,18 @@ class TeamMemberBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     moodle_id: str = Field(..., min_length=1, max_length=20)
-    division: Optional[str] = Field(None, max_length=5)
+    roll_no: str = Field(..., min_length=1, max_length=20)
+    division: str = Field(..., max_length=5)
     department: str = Field(..., min_length=1, max_length=100)
-    year: Optional[str] = Field(None, max_length=20)
-    mobile: Optional[str] = Field(None, pattern=r'^[0-9]{10}$')
+    year: str = Field(..., max_length=10)
+    mobile: str = Field(..., pattern=r'^[0-9]{10}$')
     is_leader: bool = False
     
     @validator('mobile')
     def validate_mobile(cls, v):
-        """Validate mobile number is exactly 10 digits if provided."""
-        if v is not None:
-            if not v.isdigit() or len(v) != 10:
-                raise ValueError('Mobile number must be exactly 10 digits')
+        """Validate mobile number is exactly 10 digits."""
+        if not v.isdigit() or len(v) != 10:
+            raise ValueError('Mobile number must be exactly 10 digits')
         return v
     
     @validator('email')
@@ -195,10 +195,11 @@ class TeamMemberResponse(BaseModel):
     name: str
     email: str
     moodle_id: str
-    division: Optional[str] = None
+    roll_no: str
+    division: str
     department: str
-    year: Optional[str] = None
-    mobile: Optional[str] = None
+    year: str
+    mobile: str
     is_leader: bool
     created_at: datetime
     

@@ -60,7 +60,8 @@ def create_hackathon_team(
                 name=sanitize_string(member_data.name, max_length=100),
                 email=member_data.email.lower(),
                 moodle_id=member_data.moodle_id,
-                division=member_data.division.upper() if member_data.division else None,
+                roll_no=member_data.roll_no,
+                division=member_data.division.upper() if member_data.division else "",
                 department=member_data.department,
                 year=member_data.year,
                 mobile=member_data.mobile,
@@ -154,7 +155,7 @@ def export_hackathon_teams_csv(
     writer = csv.writer(output)
     writer.writerow([
         "Team Name", "Event", "Registered At",
-        "Member Name", "Email", "Moodle ID", "Department",
+        "Member Name", "Email", "Moodle ID", "Roll No", "Department",
         "Year", "Division", "Mobile", "Is Leader"
     ])
     
@@ -164,7 +165,7 @@ def export_hackathon_teams_csv(
                 team.team_name, team.event_name,
                 team.created_at.strftime("%Y-%m-%d %H:%M"),
                 member.name, member.email, member.moodle_id,
-                member.department, member.year or "",
+                member.roll_no, member.department, member.year or "",
                 member.division or "", member.mobile or "",
                 "Yes" if member.is_leader else "No"
             ])

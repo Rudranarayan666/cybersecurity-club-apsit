@@ -15,7 +15,7 @@ const YEARS = ['First Year', 'Second Year', 'Third Year', 'Fourth Year'];
 const EVENT_NAME = 'CyberDefense CTF 2026';
 
 const EMPTY_MEMBER = {
-    name: '', email: '', moodle_id: '',
+    name: '', email: '', moodle_id: '', roll_no: '',
     division: '', department: '', year: '', mobile: '',
 };
 
@@ -103,10 +103,13 @@ const MemberCard = ({ member, index, onChange }) => {
                 </Field>
             </div>
 
-            {/* Row 2: Moodle ID */}
+            {/* Row 2: Moodle ID + Roll No */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
                 <Field label="Moodle ID" required>
                     <Input value={member.moodle_id} onChange={set('moodle_id')} placeholder="e.g. 22CO001" required pattern="[a-zA-Z0-9]{5,20}" title="5-20 alphanumeric characters" />
+                </Field>
+                <Field label="Roll Number" required>
+                    <Input value={member.roll_no} onChange={set('roll_no')} placeholder="e.g. 22CO046" required />
                 </Field>
             </div>
 
@@ -118,8 +121,8 @@ const MemberCard = ({ member, index, onChange }) => {
                         {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
                     </Select>
                 </Field>
-                <Field label="Year">
-                    <Select value={member.year} onChange={set('year')}>
+                <Field label="Year" required>
+                    <Select value={member.year} onChange={set('year')} required>
                         <option value="">Select Year</option>
                         {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
                     </Select>
@@ -128,11 +131,11 @@ const MemberCard = ({ member, index, onChange }) => {
 
             {/* Row 4: Division + Mobile */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
-                <Field label="Division">
-                    <Input value={member.division} onChange={set('division')} placeholder="e.g. A, B, C" />
+                <Field label="Division" required>
+                    <Input value={member.division} onChange={set('division')} placeholder="e.g. A, B, C" required />
                 </Field>
-                <Field label="Mobile No.">
-                    <Input type="tel" value={member.mobile} onChange={set('mobile')} placeholder="10-digit number" pattern="[0-9]{10}" title="Exactly 10 digits" />
+                <Field label="Mobile No." required>
+                    <Input type="tel" value={member.mobile} onChange={set('mobile')} placeholder="10-digit number" required pattern="[0-9]{10}" title="Exactly 10 digits" />
                 </Field>
             </div>
         </div>
@@ -166,15 +169,16 @@ const Register = () => {
         setStatus('submitting');
         setErrorMsg('');
 
-        // Convert empty strings → null so Optional fields pass Pydantic validation
+        // Build clean member payload - all fields now required
         const cleanMember = (m, i) => ({
             name: m.name.trim(),
             email: m.email.trim().toLowerCase(),
             moodle_id: m.moodle_id.trim(),
-            division: m.division.trim() || null,
+            roll_no: m.roll_no.trim(),
+            division: m.division.trim(),
             department: m.department,
-            year: m.year || null,
-            mobile: m.mobile.trim() || null,
+            year: m.year,
+            mobile: m.mobile.trim(),
             is_leader: i === 0,
         });
 
@@ -189,9 +193,9 @@ const Register = () => {
             const m = members[i];
             const memberNum = i + 1;
 
-            if (!m.name.trim() || !m.email.trim() || !m.moodle_id.trim() || !m.department) {
+            if (!m.name.trim() || !m.email.trim() || !m.moodle_id.trim() || !m.roll_no.trim() || !m.department || !m.year || !m.division.trim() || !m.mobile.trim()) {
                 setStatus('error');
-                setErrorMsg(`Member ${memberNum} is missing required fields (Name, Email, Moodle ID, or Department).`);
+                setErrorMsg(`Member ${memberNum} is missing required fields (Name, Email, Moodle ID, Roll No, Department, Year, Division, or Mobile).`);
                 return;
             }
 
@@ -203,8 +207,8 @@ const Register = () => {
                 return;
             }
 
-            // Mobile Validation (if provided)
-            if (m.mobile.trim() && !/^[0-9]{10}$/.test(m.mobile.trim())) {
+            // Mobile Validation
+            if (!/^[0-9]{10}$/.test(m.mobile.trim())) {
                 setStatus('error');
                 setErrorMsg(`Member ${memberNum} mobile number must be exactly 10 digits.`);
                 return;
