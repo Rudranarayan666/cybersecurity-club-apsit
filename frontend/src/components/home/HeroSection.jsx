@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const TYPEWRITER_WORDS = ['HACKERS', 'BUILDERS', 'PIONEERS', 'DEFENDERS', 'ENGINEERS'];
 
@@ -8,9 +12,49 @@ const HeroSection = () => {
     const [twDeleting, setTwDeleting] = useState(false);
     const [mounted, setMounted] = useState(false);
 
+    const figureRef = useRef(null);
+
     useEffect(() => {
         const t = setTimeout(() => setMounted(true), 80);
         return () => clearTimeout(t);
+    }, []);
+
+    useEffect(() => {
+        let ctx = gsap.context(() => {
+            if (figureRef.current) {
+                const isMobile = window.innerWidth <= 640;
+
+                // The ThreeCanvas heroPlane scales natively with the scroll.
+                // We want this DOM image to move to the exact center of the viewport,
+                // shrink slightly, and then fade out just as the 3D canvas takes over its role completely.
+                gsap.to(figureRef.current, {
+                    scrollTrigger: {
+                        trigger: "#home",
+                        start: "top top",
+                        end: "bottom top", // Matches the ThreeCanvas phase 1 scroll range
+                        scrub: 1,
+                    },
+                    // Move EXACTLY to the absolute center of the viewport regardless of CSS layout
+                    x: () => {
+                        if (!figureRef.current) return 0;
+                        const rect = figureRef.current.getBoundingClientRect();
+                        return (window.innerWidth / 2) - (rect.left + rect.width / 2);
+                    },
+                    y: () => {
+                        if (!figureRef.current) return 0;
+                        const rect = figureRef.current.getBoundingClientRect();
+                        // It must travel the distance to center PLUS counteract the scrolling container's upward movement.
+                        // Since 'end' is 'bottom top', the container will move UP by window.innerHeight.
+                        const scrollDistance = window.innerHeight;
+                        return (window.innerHeight / 2) - (rect.top + rect.height / 2) + scrollDistance;
+                    },
+                    scale: 0.8, // Match the initial visual size of the Three.js heroPlane
+                    opacity: 0, // Crossfade perfectly as the 3D plane stays visible 
+                    ease: "power2.inOut",
+                });
+            }
+        });
+        return () => ctx.revert();
     }, []);
 
     useEffect(() => {
@@ -91,7 +135,7 @@ const HeroSection = () => {
 
                     {/* RIGHT / BOTTOM — figure */}
                     <div className="hs-col-fig">
-                        <img src="/hero-figure.png" alt="Cyber Guardian" className="hs-figure" />
+                        <img ref={figureRef} src="/hero-figure.png" alt="Cyber Guardian" className="hs-figure" />
                     </div>
                 </div>
 
@@ -292,7 +336,7 @@ const HeroSection = () => {
 .hs-figure {
     width: 100%; height: 100%;
     object-fit: contain; object-position: bottom center;
-    max-width: 700px;
+    max-width: 550px;
     /* No blue glow — clean appearance */
     filter: none;
     mask-image: linear-gradient(to top, black 40%, rgba(0,0,0,.65) 68%, transparent 100%);
@@ -304,9 +348,10 @@ const HeroSection = () => {
    TABLET  641px – 1024px
 ═══════════════════════════════ */
 @media (min-width: 641px) and (max-width: 1024px) {
-    .hs-layout { padding: 0 2.5rem; gap: 1rem; }
+    .hs { min-height: calc(100vh - 100px); }
+    .hs-layout { padding: 0 2.5rem; gap: 1rem; min-height: calc(100vh - 180px); }
     .hs-heading { font-size: clamp(2.4rem, 5.5vw, 5rem); }
-    .hs-col-fig { max-height: 700px; }
+    .hs-col-fig { max-height: 600px; height: calc(100vh - 180px); }
     .hs-figure { max-width: 500px; }
 }
 
@@ -349,8 +394,8 @@ const HeroSection = () => {
         width: 100%;
     }
     .hs-figure {
-        width: 140%;
-        height: 250%;
+        width: 100%;
+        height: 180%;
         /* re-centre after scaling out */
         max-width: none;
         object-fit: contain;

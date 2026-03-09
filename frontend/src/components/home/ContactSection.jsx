@@ -50,7 +50,7 @@ const ContactSection = () => {
                         <h5 style={{ marginBottom: '1.2rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>Follow the Signal</h5>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             {[
-                                { href: 'https://instagram.com', icon: 'fa-instagram', color: '#e1306c' },
+                                { href: 'https://instagram.com/cybersecurityclub_apsit', icon: 'fa-instagram', color: '#e1306c' },
                                 { href: 'https://linkedin.com', icon: 'fa-linkedin-in', color: '#0077b5' },
                                 { href: 'https://wa.me', icon: 'fa-whatsapp', color: '#25d366' },
                             ].map(s => (

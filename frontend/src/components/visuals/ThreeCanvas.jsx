@@ -40,29 +40,23 @@ const ThreeCanvas = ({ isDarkMode }) => {
         heroGroup.scale.set(1.2, 1.2, 1.2);
         scene.add(heroGroup);
 
-        // 1. NUCLEUS
-        const nucleusGeo = new THREE.OctahedronGeometry(2, 2);
-        const nucleusMat = new THREE.MeshStandardMaterial({
-            color: 0xffffff, emissive: 0x0066ff, emissiveIntensity: 0.8,
-            wireframe: true, transparent: true, opacity: 0.9
-        });
-        const nucleus = new THREE.Mesh(nucleusGeo, nucleusMat);
-        heroGroup.add(nucleus);
+        // 1. HERO IMAGE PLANE (Replaces Nucleus, Shell, Shield)
+        // Using a Plane instead of Sprite to avoid fog/ambient light tinting it white
+        const textureLoader = new THREE.TextureLoader();
+        const heroTexture = textureLoader.load('/hero-figure.png');
+        heroTexture.minFilter = THREE.LinearFilter;
 
-        // 2. SHELL
-        const shellGeo = new THREE.IcosahedronGeometry(4, 1);
-        const shellMat = new THREE.MeshPhysicalMaterial({
-            color: 0x00c2ff, metalness: 0.1, roughness: 0.0,
-            transmission: 0.9, thickness: 2.0, clearcoat: 1.0, side: THREE.DoubleSide
+        const heroGeo = new THREE.PlaneGeometry(10, 10);
+        const heroMaterial = new THREE.MeshBasicMaterial({
+            map: heroTexture,
+            transparent: true,
+            opacity: 1.0,           // Start fully visible in the 3D scene when it fades in
+            depthWrite: false,      // Prevent Z-fighting with particles
+            color: 0xffffff         // Ensure no color tint
         });
-        const shell = new THREE.Mesh(shellGeo, shellMat);
-        heroGroup.add(shell);
-
-        // 3. SHIELD
-        const shieldGeo = new THREE.IcosahedronGeometry(5.5, 1);
-        const shieldMat = new THREE.MeshBasicMaterial({ color: 0x0066ff, wireframe: true, transparent: true, opacity: 0.15 });
-        const shield = new THREE.Mesh(shieldGeo, shieldMat);
-        heroGroup.add(shield);
+        const heroPlane = new THREE.Mesh(heroGeo, heroMaterial);
+        // Added directly to scene to prevent spinning, manually synced to heroGroup for scroll fading/Z-axis
+        scene.add(heroPlane);
 
         // 4. PARTICLES
         const pGroup = new THREE.Group();
@@ -148,27 +142,40 @@ const ThreeCanvas = ({ isDarkMode }) => {
                 heroGroup.visible = true;
                 heroGroup.rotation.y = currentRotY + time * 0.1;
                 heroGroup.rotation.x = currentRotX;
-                nucleus.rotation.y -= 0.01; nucleus.rotation.z += 0.01;
-                shield.rotation.y += 0.005;
+
+                // Keep rings and particles animated
                 ring1.rotation.x = (Math.PI / 2) + Math.sin(time * 0.5) * 0.2;
                 ring2.rotation.y = (Math.PI / 3) + Math.cos(time * 0.4) * 0.2;
                 pGroup.rotation.y = -time * 0.05;
                 pGroup.children.forEach(p => { p.rotation.x += p.userData.rotX; p.rotation.y += p.userData.rotY; });
 
-                const hue = (time * 0.05) % 1;
-                nucleus.material.emissive.lerp(new THREE.Color().setHSL(hue, 0.8, 0.5), 0.05);
-                shield.material.color.lerp(new THREE.Color().setHSL((hue + 0.5) % 1, 0.8, 0.5), 0.05);
-
                 heroGroup.position.z = scrollPercent * 60;
+
+                // Sync the non-spinning plane to the scroll depth and orientation
+                heroPlane.position.z = scrollPercent * 60;
+                heroPlane.quaternion.copy(camera.quaternion);
+                heroPlane.visible = true;
+
                 const opacity = 1 - (scrollPercent * 3);
+
+                // Fade out heroPlane independently
+                if (heroPlane.material) {
+                    heroPlane.material.opacity = Math.max(0, opacity * 1.0);
+                }
+
                 heroGroup.children.forEach(child => {
-                    if (child.material) child.material.opacity = Math.max(0, opacity * (child === nucleus ? 0.9 : 0.3));
+                    // Specific opacity scaling so things fade out naturally
+                    if (child.material) {
+                        child.material.opacity = Math.max(0, opacity * 0.1);
+                    }
                 });
 
                 const expansion = 1 + scrollPercent * 1.5;
-                shield.scale.setScalar(expansion);
                 pGroup.scale.setScalar(expansion);
-            } else { heroGroup.visible = false; }
+            } else {
+                heroGroup.visible = false;
+                heroPlane.visible = false;
+            }
 
             if (scrollPercent > 0.2) {
                 tunnelGroup.visible = true;
