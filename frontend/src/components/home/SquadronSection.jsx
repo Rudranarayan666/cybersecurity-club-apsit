@@ -95,7 +95,7 @@ const SquadronSection = () => {
                                 <div className="sq-faculty-shine" />
                                 <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center' }}>
                                     <h4 style={{ color: f.color, marginBottom: '0.75rem', fontFamily: 'var(--font-head)', fontSize: '1.1rem' }}>{f.name}</h4>
-                                    <p style={{ fontSize: '0.85rem', color: '#ccc', lineHeight: '1.5', marginBottom: '1.25rem' }}>
+                                    <p style={{ fontSize: '0.85rem', color: '#ccc', lineHeight: '1.5', marginBottom: '1.25rem', textAlign: 'justify' }}>
                                         {f.desc}
                                     </p>
                                     <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', fontSize: '0.9rem', color: f.color, fontWeight: 'bold', alignItems: 'center' }}>

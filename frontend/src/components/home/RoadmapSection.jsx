@@ -74,7 +74,7 @@ const RoadmapSection = () => {
                 <div className="card hover-trigger" style={{ borderTop: '4px solid var(--accent-success)' }}>
                     <h3><i className="fa-solid fa-seedling"></i> Beginner</h3>
                     <ul className="skill-list">
-                        {['Network Fundamentals', 'Basic Cryptography', 'Security Principles (CIA)', 'Intro to Linux', 'Web Security Basics'].map(skill => (
+                        {['Network Fundamentals', 'Security Principles (CIA)', 'Basic Cryptography', 'Introduction to Linux', 'Basics of Web Security'].map(skill => (
                             <li key={skill}><i className="fa-solid fa-check"></i> {skill}</li>
                         ))}
                     </ul>
@@ -83,7 +83,7 @@ const RoadmapSection = () => {
                 <div className="card hover-trigger" style={{ borderTop: '4px solid var(--accent-secondary)' }}>
                     <h3><i className="fa-solid fa-layer-group"></i> Intermediate</h3>
                     <ul className="skill-list">
-                        {['Penetration Testing', 'Vulnerability Assessment', 'Python for Hackers', 'Wireless Security', 'Ethical Hacking'].map(skill => (
+                        {['Vulnerability Assessment', 'Penetration Testing', 'Web Application Security', 'Wireless Security', 'Ethical Hacking'].map(skill => (
                             <li key={skill}><i className="fa-solid fa-check"></i> {skill}</li>
                         ))}
                     </ul>
@@ -92,7 +92,7 @@ const RoadmapSection = () => {
                 <div className="card hover-trigger" style={{ borderTop: '4px solid var(--accent-alert)' }}>
                     <h3><i className="fa-solid fa-crosshairs"></i> Advanced</h3>
                     <ul className="skill-list">
-                        {['Malware Analysis', 'Reverse Engineering', 'Cloud Security (AWS/Azure)', 'Zero-Day Research', 'Threat Hunting'].map(skill => (
+                        {['Malware Analysis', 'Reverse Engineering', 'Threat Hunting', 'Cloud Security (AWS/Azure)', 'Zero-Day Research'].map(skill => (
                             <li key={skill}><i className="fa-solid fa-check"></i> {skill}</li>
                         ))}
                     </ul>

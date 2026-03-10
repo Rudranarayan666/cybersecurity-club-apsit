@@ -75,7 +75,7 @@ const HeroSection = () => {
 
                         <div className="hs-btns">
                             <button className="hs-btn-primary" onClick={() => scrollTo('events')}>
-                                <i className="fa-solid fa-shield-halved" /> Join Operations
+                                <i className="fa-solid fa-shield-halved" /> Explore Events
                             </button>
                             <button className="hs-btn-ghost" onClick={() => scrollTo('learn')}>
                                 <i className="fa-solid fa-terminal" /> Start Learning
