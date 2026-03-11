@@ -130,11 +130,22 @@ const EventsSection = () => {
                         <div style={{ flex: '1 1 450px' }}>
                             <span className="tag" style={{ background: 'var(--accent-primary)', color: '#fff', fontSize: '0.7rem' }}>REGISTRATION OPEN</span>
                             <h3 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', margin: '1rem 0', color: '#fff' }}>CyberDefense 2026 CTF</h3>
-                            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>Join 50+ elite teams in a 48-hour endurance test. Challenges include Web Exploitation, Cryptography, and Real-world Forensics.</p>
+                            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6', textAlign: 'justify' }}>Participate in our annual Capture The Flag competition. A great opportunity to test your security skills and learn from real-world scenarios.</p>
                         </div>
                         <button className="btn btn-primary" style={{ padding: '1.2rem 2.5rem', whiteSpace: 'nowrap' }} onClick={() => navigate('/register')}>INITIALIZE REGISTRATION</button>
                     </div>
                 </div>
+            </div>
+
+            {/* FEEDBACK SECTION */}
+            <div style={{ marginBottom: '8rem', padding: '3rem', background: 'rgba(0, 204, 102, 0.05)', borderRadius: '24px', border: '1px solid rgba(0, 204, 102, 0.2)', textAlign: 'center' }}>
+                <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem', color: 'var(--accent-success)' }}>Mission Intel & Feedback</h3>
+                <p style={{ maxWidth: '700px', margin: '0 auto 2rem', color: 'var(--text-muted)' }}>
+                    Your feedback helps us refine our operations. If you attended our recent CTF or any event, please share your thoughts and suggestions.
+                </p>
+                <a href="https://forms.gle/your-google-form-link" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ borderColor: 'var(--accent-success)', color: 'var(--accent-success)', padding: '1rem 2rem' }}>
+                    <i className="fa-solid fa-comment-dots" style={{ marginRight: '10px' }}></i> SUBMIT FEEDBACK
+                </a>
             </div>
 
             {/* PAST DEPLOYMENTS */}
@@ -152,7 +163,8 @@ const EventsSection = () => {
                             background: 'rgba(255, 255, 255, 0.01)',
                             border: '1px solid rgba(255, 255, 255, 0.05)',
                             padding: '2.5rem',
-                            height: '100%'
+                            height: '100%',
+                            textAlign: 'center'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                 <span style={{ color: 'var(--accent-primary)', fontWeight: '800', fontSize: '0.7rem', letterSpacing: '2px' }}>{pe.tag}</span>
@@ -165,7 +177,7 @@ const EventsSection = () => {
                                 <div style={{ width: '64px', height: '64px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}>
                                     <img src={pe.previewImg || "/images/Himanshu2.jpg"} alt={pe.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
-                                <p style={{ fontSize: '0.85rem', color: '#718096', margin: 0, lineHeight: '1.6' }}>{pe.shortDesc}</p>
+                                <p style={{ fontSize: '0.85rem', color: '#718096', margin: 0, lineHeight: '1.6', textAlign: 'justify' }}>{pe.shortDesc}</p>
                             </div>
 
                             <button onClick={() => setSelectedPastEvent(pe)} className="btn btn-secondary" style={{ width: '100%', border: '1px solid #2d3748', background: 'transparent' }}>
@@ -203,7 +215,7 @@ const EventsSection = () => {
                         <h2 style={{ fontSize: '2.5rem', fontWeight: '800', color: '#fff', marginBottom: '2rem', lineHeight: '1.2' }}>{selectedPastEvent.title}</h2>
 
                         <div style={{ padding: '2rem', background: 'rgba(0,0,0,0.5)', borderRadius: '16px', borderLeft: '4px solid var(--accent-primary)', marginBottom: '3rem' }}>
-                            <p style={{ margin: 0, lineHeight: '1.8', color: '#a0aec0', fontSize: '1.1rem' }}>{selectedPastEvent.fullDesc}</p>
+                            <p style={{ margin: 0, lineHeight: '1.8', color: '#a0aec0', fontSize: '1.1rem', textAlign: 'justify' }}>{selectedPastEvent.fullDesc}</p>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
