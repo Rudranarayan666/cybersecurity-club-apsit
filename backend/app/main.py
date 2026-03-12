@@ -10,7 +10,7 @@ from app.database import engine, Base
 from app.middleware.cors import setup_cors
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.middleware.rate_limit import get_rate_limiter, get_rate_limit_exceeded_handler
-from app.api import auth, events, registrations, resources, hackathon_teams
+from app.api import auth, events, registrations, resources, hackathon_teams, feedback
 from app.api import mfa as mfa_router
 from app.api import metrics as metrics_router
 from app.dependencies import get_current_user
@@ -152,6 +152,7 @@ app.include_router(events.router)
 app.include_router(registrations.router)
 app.include_router(resources.router)
 app.include_router(hackathon_teams.router)
+app.include_router(feedback.router)
 app.include_router(metrics_router.router)
 
 # Error handlers

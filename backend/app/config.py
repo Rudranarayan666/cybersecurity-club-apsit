@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     )
 
     # Database
-    database_url: str = "sqlite:///./test.db"
+    # Database - Requires PostgreSQL
+    database_url: str = "postgresql://user:password@localhost:5432/dbname"
     db_pool_size: int = 10
     db_max_overflow: int = 20
 

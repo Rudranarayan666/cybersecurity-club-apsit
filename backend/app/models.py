@@ -146,6 +146,40 @@ class TeamMember(Base):
         return f"<TeamMember(name={self.name}, team_id={self.team_id})>"
 
 
+class Feedback(Base):
+    """CTF Feedback and Review Form."""
+    __tablename__ = "feedback"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email = Column(String(100), nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    year = Column(String(20), nullable=False)
+    department = Column(String(100), nullable=False)
+    moodle_id = Column(String(20), nullable=False)
+    
+    # Rating questions (1-5)
+    overall_rating = Column(Integer, nullable=False)
+    practical_concepts_rating = Column(Integer, nullable=False)
+    
+    # Multiple choice ratings as strings
+    interesting_rating = Column(String(50), nullable=False)
+    difficulty_rating = Column(String(50), nullable=False)
+    enjoyed_category = Column(String(50), nullable=False)
+    improved_skills = Column(String(20), nullable=False) # Yes/Somewhat/No
+    encouraged_teamwork = Column(String(20), nullable=False) # Yes/Somewhat/No
+    
+    # Long text answers
+    valuable_learning = Column(Text, nullable=False)
+    challenges_faced = Column(Text, nullable=False)
+    suggestions = Column(Text, nullable=False)
+    liked_challenges = Column(Text, nullable=True) # Optional text
+    
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    def __repr__(self):
+        return f"<Feedback(email={self.email}, rating={self.overall_rating})>"
+
+
 class AuditLog(Base):
     """Audit log for all admin and security-relevant actions."""
     __tablename__ = "audit_logs"

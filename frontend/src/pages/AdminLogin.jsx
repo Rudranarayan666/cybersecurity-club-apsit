@@ -16,7 +16,7 @@ const AdminLogin = () => {
 
         const result = await apiService.login(username, password);
         if (result.success) {
-            navigate('/admin/teams');
+            navigate('/admin/feedback');
         } else {
             setError(result.error || 'Identity Verification Failed');
         }

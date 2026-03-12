@@ -1,6 +1,6 @@
 """pytest configuration, fixtures, and test helpers.
 
-Uses in-memory SQLite. No PostgreSQL / psycopg2 required.
+Uses a local PostgreSQL testing database.
 Each test gets a freshly cleared session to avoid UNIQUE constraint issues.
 """
 import pytest
@@ -10,11 +10,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-# ── In-memory SQLite ──────────────────────────────────────────────────────────
-TEST_DATABASE_URL = "sqlite:///:memory:"
+# ── PostgreSQL Testing DB ──────────────────────────────────────────────────────────
+TEST_DATABASE_URL = "postgresql://cybersec_admin:changeme_in_production@localhost:5432/cybersec_test"
 test_engine = create_engine(
     TEST_DATABASE_URL,
-    connect_args={"check_same_thread": False},
     poolclass=StaticPool
 )
 TestingSessionLocal = sessionmaker(
@@ -24,7 +23,7 @@ TestingSessionLocal = sessionmaker(
 
 @pytest.fixture(scope="session", autouse=True)
 def patch_database():
-    """Replace the app's DB engine with SQLite for the test session."""
+    """Replace the app's DB engine with PostgreSQL Test DB for the test session."""
     import app.database as db_module
     original_engine = db_module.engine
     original_session = db_module.SessionLocal

@@ -269,6 +269,19 @@ class APIService {
             return { success: false, error: error.message };
         }
     }
+    // ── FEEDBACK ─────────────────────────────────────────────────────────────
+
+    async submitFeedback(data) {
+        return this.request('/feedback', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+
+    async getFeedback(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.request(queryString ? `/feedback?${queryString}` : '/feedback');
+    }
 }
 
 export const apiService = new APIService();

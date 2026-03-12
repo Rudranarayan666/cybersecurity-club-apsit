@@ -14,10 +14,10 @@ import Preloader from './components/common/Preloader';
 // Pages — lazily loaded for code splitting
 const Home = lazy(() => import('./pages/Home'));
 const Learning = lazy(() => import('./pages/Learning'));
-const Register = lazy(() => import('./pages/Register'));       // Team registration
+const Feedback = lazy(() => import('./pages/Feedback'));       // Individual Feedback
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));   // Admin login
 const Resources = lazy(() => import('./pages/Resources'));
-const AdminTeams = lazy(() => import('./pages/AdminTeams'));   // Admin teams dashboard
+const AdminFeedback = lazy(() => import('./pages/AdminFeedback'));   // Admin feedback dashboard
 
 function App() {
   useParallax(); // Attach the global scroll listener for the --scroll-y CSS variable
@@ -61,9 +61,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Home isDarkMode={isDarkMode} />} />
               <Route path="/learning" element={<Learning isDarkMode={isDarkMode} />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/feedback" element={<Feedback />} />
               <Route path="/admin-login" element={<AdminLogin />} />
-              <Route path="/admin/teams" element={<AdminTeams />} />
+              <Route path="/admin/feedback" element={<AdminFeedback />} />
               <Route path="/resources" element={<Resources />} />
             </Routes>
           </Suspense>

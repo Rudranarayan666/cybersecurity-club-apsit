@@ -132,21 +132,12 @@ const EventsSection = () => {
                             <h3 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.2rem)', margin: '1rem 0', color: '#fff' }}>CyberDefense 2026 CTF</h3>
                             <p style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6', textAlign: 'justify' }}>Participate in our annual Capture The Flag competition. A great opportunity to test your security skills and learn from real-world scenarios.</p>
                         </div>
-                        <button className="btn btn-primary" style={{ padding: '1.2rem 2.5rem', whiteSpace: 'nowrap' }} onClick={() => navigate('/register')}>INITIALIZE REGISTRATION</button>
+                        <button className="btn btn-primary" style={{ padding: '1.2rem 2.5rem', whiteSpace: 'nowrap' }} onClick={() => navigate('/feedback')}>SUBMIT FEEDBACK</button>
                     </div>
                 </div>
             </div>
 
-            {/* FEEDBACK SECTION */}
-            <div style={{ marginBottom: '8rem', padding: '3rem', background: 'rgba(0, 204, 102, 0.05)', borderRadius: '24px', border: '1px solid rgba(0, 204, 102, 0.2)', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '1.8rem', marginBottom: '1rem', color: 'var(--accent-success)' }}>Mission Intel & Feedback</h3>
-                <p style={{ maxWidth: '700px', margin: '0 auto 2rem', color: 'var(--text-muted)' }}>
-                    Your feedback helps us refine our operations. If you attended our recent CTF or any event, please share your thoughts and suggestions.
-                </p>
-                <a href="https://forms.gle/your-google-form-link" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ borderColor: 'var(--accent-success)', color: 'var(--accent-success)', padding: '1rem 2rem' }}>
-                    <i className="fa-solid fa-comment-dots" style={{ marginRight: '10px' }}></i> SUBMIT FEEDBACK
-                </a>
-            </div>
+
 
             {/* PAST DEPLOYMENTS */}
             <div>

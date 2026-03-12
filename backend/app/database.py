@@ -4,23 +4,23 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import settings
 
-# Build engine options — pool args not supported by SQLite
-is_sqlite = settings.database_url.startswith("sqlite")
+# PostgreSQL only engine options
+engine_kwargs = {
+    "pool_size": settings.db_pool_size,
+    "max_overflow": settings.db_max_overflow,
+    "pool_pre_ping": True,
+    "pool_recycle": 1800,
+    "pool_timeout": 30,
+    "echo": settings.debug,
+}
 
-if is_sqlite:
+if settings.database_url.startswith("sqlite"):
+    # SQLite-specific configuration
     engine_kwargs = {
         "connect_args": {"check_same_thread": False},
         "echo": settings.debug,
     }
-else:
-    engine_kwargs = {
-        "pool_size": settings.db_pool_size,
-        "max_overflow": settings.db_max_overflow,
-        "pool_pre_ping": True,
-        "pool_recycle": 1800,
-        "pool_timeout": 30,
-        "echo": settings.debug,
-    }
+elif settings.database_url.startswith("postgresql"):
     # Add SSL for Render/production if not already in the URL
     if "sslmode" not in settings.database_url:
         engine_kwargs["connect_args"] = {"sslmode": "require"}

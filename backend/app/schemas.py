@@ -229,3 +229,36 @@ class HackathonTeamPublicResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+# Feedback Schemas
+class FeedbackCreate(BaseModel):
+    """Feedback creation schema."""
+    email: EmailStr
+    name: str = Field(..., min_length=1, max_length=100)
+    year: str = Field(..., min_length=1, max_length=20)
+    department: str = Field(..., min_length=1, max_length=100)
+    moodle_id: str = Field(..., min_length=1, max_length=20)
+    
+    overall_rating: int = Field(..., ge=1, le=5)
+    practical_concepts_rating: int = Field(..., ge=1, le=5)
+    
+    interesting_rating: str = Field(..., min_length=1, max_length=50)
+    difficulty_rating: str = Field(..., min_length=1, max_length=50)
+    enjoyed_category: str = Field(..., min_length=1, max_length=50)
+    improved_skills: str = Field(..., min_length=1, max_length=20)
+    encouraged_teamwork: str = Field(..., min_length=1, max_length=20)
+    
+    valuable_learning: str = Field(..., min_length=1)
+    challenges_faced: str = Field(..., min_length=1)
+    suggestions: str = Field(..., min_length=1)
+    liked_challenges: Optional[str] = None
+
+
+class FeedbackResponse(FeedbackCreate):
+    """Feedback response schema."""
+    id: UUID
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True

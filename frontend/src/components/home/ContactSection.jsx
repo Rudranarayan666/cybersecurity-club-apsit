@@ -51,8 +51,8 @@ const ContactSection = () => {
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             {[
                                 { href: 'https://instagram.com/cybersecurityclub_apsit', icon: 'fa-instagram', color: '#e1306c' },
-                                { href: 'https://linkedin.com', icon: 'fa-linkedin-in', color: '#0077b5' },
-                                { href: 'https://wa.me', icon: 'fa-whatsapp', color: '#25d366' },
+                                { href: 'https://linkedin.com/company/cybersecurity-club-apsit/', icon: 'fa-linkedin-in', color: '#0077b5' },
+                                { href: 'https://chat.whatsapp.com/JIAYxYq1PXz7KduUqLkUJM', icon: 'fa-whatsapp', color: '#25d366' },
                             ].map(s => (
                                 <a key={s.icon} href={s.href} target="_blank" rel="noreferrer"
                                     style={{ width: '45px', height: '45px', borderRadius: '50%', background: `${s.color}20`, border: `1px solid ${s.color}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color, textDecoration: 'none', transition: '0.3s' }}
