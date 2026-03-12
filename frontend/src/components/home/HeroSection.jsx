@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -7,6 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 const TYPEWRITER_WORDS = ['HACKERS', 'BUILDERS', 'PIONEERS', 'DEFENDERS', 'ENGINEERS'];
 
 const HeroSection = () => {
+    const navigate = useNavigate();
     const [twIndex, setTwIndex] = useState(0);
     const [twText, setTwText] = useState('');
     const [twDeleting, setTwDeleting] = useState(false);
@@ -116,12 +118,8 @@ const HeroSection = () => {
                         <p className="hs-sub">
                             Cybersecurity Club at APSIT — building elite defenders, one exploit at a time.
                         </p>
-
                         <div className="hs-btns">
-                            <button className="hs-btn-primary" onClick={() => scrollTo('events')}>
-                                <i className="fa-solid fa-shield-halved" /> Explore Events
-                            </button>
-                            <button className="hs-btn-ghost" onClick={() => scrollTo('learn')}>
+                            <button className="hs-btn-primary" onClick={() => navigate('/learning')}>
                                 <i className="fa-solid fa-terminal" /> Start Learning
                             </button>
                         </div>
