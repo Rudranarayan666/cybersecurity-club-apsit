@@ -19,9 +19,11 @@ router = APIRouter(prefix="/api/events", tags=["Events"])
 def get_events(
     type: Optional[EventType] = Query(None, description="Filter by event type"),
     is_active: Optional[bool] = Query(None, description="Filter by active status"),
+    skip: int = Query(0, ge=0, description="Skip N records"),
+    limit: int = Query(100, ge=1, le=1000, description="Limit records returned"),
     db: Session = Depends(get_db)
 ):
-    """Get all events.
+    """Get all events with pagination.
     
     - **type**: Optional filter by event type
     - **is_active**: Optional filter by active status
@@ -39,7 +41,7 @@ def get_events(
     else:
         query = query.filter(Event.is_active == is_active)
     
-    events = query.order_by(Event.date.desc()).all()
+    events = query.order_by(Event.date.desc()).offset(skip).limit(limit).all()
     return events
 
 

@@ -17,8 +17,8 @@ class AuditAction:
     LOGIN_SUCCESS = "LOGIN_SUCCESS"
     LOGIN_FAILED = "LOGIN_FAILED"
     LOGOUT = "LOGOUT"
-    TOKEN_REFRESH = "TOKEN_REFRESH"
-    TOKEN_REVOKED = "TOKEN_REVOKED"
+    TOKEN_REFRESH = "TOKEN_REFRESH"  # nosec B105
+    TOKEN_REVOKED = "TOKEN_REVOKED"  # nosec B105
     
     # Events
     CREATE_EVENT = "CREATE_EVENT"
@@ -44,20 +44,17 @@ class AuditAction:
 
 
 def get_client_ip(request: Request) -> str:
-    """Extract real client IP handling reverse proxy headers."""
-    # Check X-Forwarded-For (Cloudflare / Nginx)
-    forwarded_for = request.headers.get("X-Forwarded-For")
-    if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
+    """
+    Extract real client IP securely.
     
-    # Check CF-Connecting-IP (Cloudflare)
-    cf_ip = request.headers.get("CF-Connecting-IP")
-    if cf_ip:
-        return cf_ip
-    
-    return request.client.host if request.client else "unknown"
-
-
+    Relies on FastAPI/Starlette's request.client.host.
+    For production behind a reverse proxy (like Nginx, AWS ALB, Render), 
+    run uvicorn with the `--proxy-headers` and `--forwarded-allow-ips` flags
+    so that the ASGI server securely resolves the actual IP.
+    """
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
 def log_audit(
     db: Session,
     action: str,

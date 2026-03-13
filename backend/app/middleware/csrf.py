@@ -16,7 +16,7 @@ CSRF_PROTECTED_PATHS = {
 
 CSRF_HEADER = "X-CSRF-Token"
 CSRF_COOKIE = "csrf_token"
-SECRET_KEY_SUFFIX = "csrf"  # Appended to JWT secret for HMAC signing
+SECRET_KEY_SUFFIX = "csrf"  # nosec B105 Appended to JWT secret for HMAC signing
 TOKEN_EXPIRY = 3600  # 1 hour
 
 

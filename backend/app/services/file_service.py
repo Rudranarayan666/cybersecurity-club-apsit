@@ -39,9 +39,18 @@ def validate_pdf_magic_bytes(file_content: bytes) -> bool:
         mime = magic.Magic(mime=True)
         detected_type = mime.from_buffer(file_content)
         return detected_type == "application/pdf"
-    except (ImportError, Exception):
-        # Fallback: if python-magic is not available, trust the %PDF signature
-        return True
+    except ImportError:
+        import logging
+        logging.getLogger(__name__).error("python-magic library is required for secure file uploads but is not installed.")
+        from fastapi import HTTPException, status
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server misconfiguration: Secure file validation library is missing."
+        )
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Error during file validation: {str(e)}")
+        return False
 
 
 def save_pdf_file(file: UploadFile) -> Tuple[str, int]:

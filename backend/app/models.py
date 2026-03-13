@@ -94,6 +94,7 @@ class Resource(Base):
     level = Column(SQLEnum(ResourceLevel), nullable=False)
     file_url = Column(String(500), nullable=False, unique=True)
     file_size = Column(Integer, nullable=True)  # Size in bytes
+    is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     

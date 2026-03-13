@@ -73,7 +73,7 @@ async def login(
     return Token(
         access_token=access_token,
         refresh_token=refresh_token_str,
-        token_type="bearer",
+        token_type="bearer",  # nosec B106
         expires_in=settings.jwt_expiration_seconds
     )
 
@@ -111,7 +111,7 @@ async def refresh_token_endpoint(
     return Token(
         access_token=new_access,
         refresh_token=new_refresh,
-        token_type="bearer",
+        token_type="bearer",  # nosec B106
         expires_in=settings.jwt_expiration_seconds
     )
 

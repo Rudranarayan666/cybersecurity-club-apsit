@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     max_file_size_mb: int = 10
 
     # Server
-    host: str = "0.0.0.0"
+    host: str = "0.0.0.0"  # nosec B104
     port: int = 8000
     debug: bool = False
 

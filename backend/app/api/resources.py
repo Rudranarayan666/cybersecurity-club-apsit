@@ -26,9 +26,11 @@ router = APIRouter(prefix="/api/resources", tags=["Resources"])
 @router.get("", response_model=List[ResourceResponse], status_code=status.HTTP_200_OK)
 def get_resources(
     level: Optional[ResourceLevel] = Query(None, description="Filter by resource level"),
+    skip: int = Query(0, ge=0, description="Skip N records"),
+    limit: int = Query(100, ge=1, le=1000, description="Limit records returned"),
     db: Session = Depends(get_db)
 ):
-    """Get all resources.
+    """Get all resources with pagination.
     
     - **level**: Optional filter by resource level (beginner, intermediate, advanced)
     
@@ -39,7 +41,10 @@ def get_resources(
     if level is not None:
         query = query.filter(Resource.level == level)
     
-    resources = query.order_by(Resource.created_at.desc()).all()
+    # Filter active resources by default
+    query = query.filter(Resource.is_active == True)
+    
+    resources = query.order_by(Resource.created_at.desc()).offset(skip).limit(limit).all()
     return resources
 
 
@@ -210,13 +215,12 @@ def delete_resource(
     if not resource:
         raise NotFoundError("Resource", str(resource_id))
     
-    # Delete file
-    file_path = Path(resource.file_url)
-    if file_path.exists():
-        delete_file(str(file_path))
+    # Soft delete
+    resource.is_active = False
     
-    # Delete database record
-    db.delete(resource)
+    # We keep the file on disk for audit/recovery for now, 
+    # but it won't be accessible via the standard GET endpoints.
+    
     db.commit()
     
     return None
